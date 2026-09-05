@@ -1,0 +1,1659 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#090909" />
+  <title>Liquid Lab — Call of Duty Services</title>
+  <meta name="description" content="Premium Call of Duty services, accounts, stats and lobby packages." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+
+  <style>
+    .policy-modal{
+      position:fixed;
+      inset:0;
+      z-index:9999;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:24px;
+      background:rgba(2,2,4,.82);
+      backdrop-filter:blur(10px);
+    }
+    .policy-modal.open{display:flex;}
+    .policy-shell{
+      width:min(920px,100%);
+      max-height:min(86vh,900px);
+      display:flex;
+      flex-direction:column;
+      overflow:hidden;
+      border:1px solid #5b1d7a;
+      border-radius:18px;
+      background:
+        radial-gradient(circle at 12% 0%,rgba(126,0,255,.12),transparent 30%),
+        linear-gradient(180deg,#101014,#09090b);
+      box-shadow:0 30px 80px rgba(0,0,0,.55),0 0 45px rgba(126,0,255,.10);
+    }
+    .policy-head{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:24px;
+      padding:26px 28px 22px;
+      border-bottom:1px solid #2a2032;
+    }
+    .policy-head .eyebrow{margin-bottom:8px;}
+    .policy-head h2{
+      margin:0;
+      font-size:clamp(26px,4vw,42px);
+      line-height:1;
+    }
+    .policy-close{
+      width:42px;
+      height:42px;
+      flex:0 0 auto;
+      display:grid;
+      place-items:center;
+      border:1px solid #3a3040;
+      border-radius:10px;
+      background:#141418;
+      color:#fff;
+      font-size:24px;
+      cursor:pointer;
+      transition:.2s ease;
+    }
+    .policy-close:hover{
+      border-color:#8d00ff;
+      box-shadow:0 0 18px rgba(141,0,255,.18);
+    }
+    .policy-body{
+      overflow:auto;
+      padding:26px 28px 30px;
+      color:#c4c4cd;
+      line-height:1.75;
+    }
+    .policy-body section{
+      padding:0 0 22px;
+      margin:0 0 22px;
+      border-bottom:1px solid #24242b;
+    }
+    .policy-body section:last-child{
+      border-bottom:0;
+      margin-bottom:0;
+      padding-bottom:0;
+    }
+    .policy-body h3{
+      margin:0 0 8px;
+      color:#fff;
+      font-size:16px;
+    }
+    .policy-body p{
+      margin:0;
+      color:#b9b9c3;
+      font-size:14px;
+    }
+    .policy-body ul{
+      margin:10px 0 0 18px;
+      padding:0;
+      color:#b9b9c3;
+      font-size:14px;
+    }
+    .policy-body li{margin:7px 0;}
+    .policy-note{
+      margin-bottom:22px;
+      padding:14px 16px;
+      border:1px solid #4f2766;
+      border-radius:11px;
+      background:rgba(126,0,255,.07);
+      color:#d8d8df;
+      font-size:13px;
+    }
+    .policy-actions{
+      display:flex;
+      justify-content:flex-end;
+      gap:12px;
+      padding:18px 28px;
+      border-top:1px solid #2a2032;
+      background:#0c0c0f;
+    }
+    .policy-back{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      padding:11px 16px;
+      border:1px solid #5f1f82;
+      border-radius:9px;
+      background:linear-gradient(135deg,#6f00ff,#9600ff);
+      color:#fff;
+      font-weight:800;
+      text-decoration:none;
+      cursor:pointer;
+    }
+    body.policy-open{overflow:hidden;}
+    @media (max-width:640px){
+      .policy-modal{padding:12px;}
+      .policy-head,.policy-body,.policy-actions{padding-left:18px;padding-right:18px;}
+      .policy-shell{max-height:90vh;}
+    }
+  </style>
+
+</head>
+<body>
+  
+  <div class="top-glow"></div>
+
+  <header class="nav-shell">
+    <nav class="nav container">
+      <a class="brand" href="https://discord.gg/liquidlab" target="_blank" rel="noreferrer">
+        <img src="logo.png" alt="LiquidLab Logo" class="brand-mark-img">
+        <span>LiquidLab<span class="brand-dot"></span></span>
+      </a>
+
+      <div class="nav-links">
+        <a class="active" href="#home">Home</a>
+        <a href="#services">Services</a>
+        <a href="#reviews">Reviews</a>
+        <a href="#faq">FAQ</a>
+      </div>
+
+      <div class="nav-actions">
+        <button class="icon-btn" aria-label="Search" id="searchButton">
+          <svg viewBox="0 0 24 24"><path d="m21 21-4.35-4.35m1.35-5.65a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z"/></svg>
+        </button>
+        <a class="discord-btn" href="https://discord.gg/liquidlab" target="_blank" rel="noreferrer">
+          <span class="status-dot"></span> Join Discord
+        </a>
+      </div>
+    </nav>
+  </header>
+
+  <aside id="siteAnnouncement" class="site-announcement" data-style="info" hidden aria-live="polite">
+    <div class="announcement-inner container">
+      <div class="announcement-copy">
+        <span id="announcementIcon" class="announcement-icon" aria-hidden="true">📢</span>
+        <div>
+          <strong id="announcementTitle"></strong>
+          <span id="announcementMessage"></span>
+        </div>
+      </div>
+      <div class="announcement-actions">
+        <a id="announcementButton" class="announcement-link" href="#" hidden></a>
+        <button id="announcementDismiss" class="announcement-dismiss" type="button" aria-label="Dismiss announcement">×</button>
+      </div>
+    </div>
+  </aside>
+
+  <main id="home">
+    <section class="hero container">
+      <div class="hero-copy">
+        <div class="eyebrow"><span></span> PREMIUM COD SERVICES</div>
+        <h1>Upgrade your game.<br><span>Skip the grind.</span></h1>
+        <p>
+          Fast, reliable Call of Duty services with straightforward pricing,
+          secure ordering, and support when you need it.
+        </p>
+
+        <div class="hero-actions">
+          <a class="primary-btn" href="#services">Browse Services
+            <svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
+          </a>
+          <a class="secondary-btn" href="#reviews">Why choose us?</a>
+        </div>
+
+        <div class="trust-row">
+          <div><strong>5/5</strong><span>Customer rating</span></div>
+          <div><strong>100+</strong><span>Orders completed</span></div>
+          <div><strong>5–10 min</strong><span>Average response</span></div>
+        </div>
+      </div>
+
+      <div class="hero-visual">
+        <div class="hud-card main-hud">
+          <div class="hud-top">
+            <div>
+              <span class="mini-label">SERVICE STATUS</span>
+              <strong><i></i> ONLINE</strong>
+            </div>
+            <span class="hud-code">#VX-07</span>
+          </div>
+
+          <div class="soldier-art">
+            <img class="banner-img" src="banner.png" alt="Liquid Lab game services banner">
+            <div class="coords">34.0522° N / 118.2437° W</div>
+          </div>
+
+          <div class="hud-bottom">
+            <div><span>QUEUE</span><strong>00</strong></div>
+            <div><span>SUCCESS RATE</span><strong>100%</strong></div>
+            <div><span>SUPPORT</span><strong>ACTIVE</strong></div>
+          </div>
+        </div>
+
+        <div class="floating-card fc-one">
+          <span class="fc-icon">✓</span>
+          <div><strong>Order complete</strong><small>Delivered successfully</small></div>
+        </div>
+        <div class="floating-card fc-two">
+          <span class="fc-icon lightning">↯</span>
+          <div><strong>Instant delivery</strong><small>Selected products</small></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="ticker">
+      <div class="ticker-track">
+        <span><i>◆</i>LIQUID DIVINIUM</span>
+        <span><i>◆</i>CRYPTO KEYS</span>
+        <span><i>◆</i>STAT PACKAGES</span>
+        <span><i>◆</i>UNLOCK SERVICES</span>
+        <span><i>◆</i>FAST SUPPORT</span>
+        <span><i>◆</i>MODDED ACCOUNTS</span>
+        <span><i>◆</i>SECURE CHECKOUT</span>
+        <span><i>◆</i>BOT LOBBIES</span>
+        <span><i>◆</i>LIQUID DIVINIUM</span>
+        <span><i>◆</i>CRYPTO KEYS</span>
+        <span><i>◆</i>STAT PACKAGES</span>
+      </div>
+    </section>
+
+    <section class="section container" id="services">
+      <div class="section-heading">
+        <div>
+          <div class="eyebrow"><span></span> SHOP SERVICES</div>
+          <h2>Choose your <em>service</em></h2>
+        </div>
+
+        <div class="filters" id="filters">
+          <button class="filter active" data-filter="all">All</button>
+          <button class="filter" data-filter="accounts">Accounts</button>
+          <button class="filter" data-filter="bo3">BO3</button>
+          <button class="filter" data-filter="bo4">BO4</button>
+          <button class="filter" data-filter="cw">Cold War</button>
+          <button class="filter" data-filter="bots">Bot Lobbies</button>
+          <button class="filter" data-filter="psn">PSN Services</button>
+        </div>
+      </div>
+
+      <div class="subfilters" id="subfilters"></div>
+
+      <div class="products" id="productGrid">
+        <article class="product-card" data-category="cw" data-product-id="cold-war-zombies">
+          <div class="badge hot">COLD WAR</div>
+          <div class="product-image">
+            <img src="products\coldwar.png" alt="Cold War Zombies Services" loading="lazy" onerror="this.closest('.product-image').classList.add('img-error')">
+            <div class="product-icon">CW</div>
+          </div>
+          <div class="product-meta"><span>ZOMBIES SERVICE</span><span class="stock"><i></i> AVAILABLE</span></div>
+          <h3>Cold War Zombies Services</h3>
+          <p>Select the Cold War Zombies service that fits what you need.</p>
+          <ul>
+            <li>Works on PS4, PS5, XB1, XBS, XBX, and PC</li>
+            <li>No login required — lobby invite</li>
+            <li>XP lobbies / stats unavailable</li>
+          </ul>
+          <div class="bot-lobby-selector" style="margin: 14px 0 18px;">
+            <label for="cwServiceOption" style="display:block;margin-bottom:7px;font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;">SELECT SERVICE</label>
+            <select id="cwServiceOption" style="width:100%;padding:12px 14px;border-radius:8px;border:1px solid #3a3a42;background:#151518;color:#fff;font:inherit;">
+              <option value="30" data-link="https://buy.stripe.com/00wdR19fNbmS7pf3U75AQ0H">Zombies Unlock All — $30</option>
+              <option value="15" data-link="https://buy.stripe.com/5kQ14fgIfez4gZPduH5AQ0I">Dark Aether Unlock — $15</option>
+              <option value="10" data-link="https://buy.stripe.com/eVq6oz9fN2Qm5h78an5AQ0J">Platinum Trophy — $10</option>
+              <option value="10" data-link="https://buy.stripe.com/00w7sDgIfdv024VeyL5AQ0K">Max Aetherium Crystals — $10</option>
+            </select>
+          </div>
+          <div id="cwServiceDetails" style="margin:0 0 18px;font-size:13px;line-height:1.6;color:#cfcfd6;">
+            Dark Aether Zombies Camo • All CW DLC Guns Unlock • All Zombies Cards (Incl. Dark Ops) • Lots Of Challenges Unlocked • Zombie Related Emblems • Max Aetherium Crystals • All Trophies Unlocked
+          </div>
+          <div class="product-bottom">
+            <div class="price"><small>FROM</small><strong id="cwServicePrice">$30.00</strong></div>
+            <a href="https://buy.stripe.com/00wdR19fNbmS7pf3U75AQ0H" class="buy-btn sellix-link" id="cwServiceBuy">Buy Product <span>→</span></a>
+          </div>
+        </article>
+
+        <article class="product-card" data-category="psn" data-product-id="ps3-trophy-service">
+          <div class="badge hot">PS3 ONLY</div>
+          <div class="product-image">
+            <img src="products\p3trophy.png" alt="PS3 Trophy Service" loading="lazy" onerror="this.closest('.product-image').classList.add('img-error')">
+            <div class="product-icon">PS3</div>
+          </div>
+          <div class="product-meta"><span>PSN SERVICE</span><span class="stock"><i></i> AVAILABLE</span></div>
+          <h3>PS3 Trophy Service</h3>
+          <p>Purchase a PlayStation 3 Trophy Service. This service is for PS3 games only. Tell us which game you want.</p>
+          <ul>
+            <li>Custom timestamps cost extra — discuss via ticket</li>
+            <li><strong>Login required</strong> — we log in to complete this service. You can still use the account while we work.</li>
+            <li>Login via PSN app is the preferred method</li>
+          </ul>
+          <div class="bot-lobby-selector" style="margin: 14px 0 18px;">
+            <label for="ps3TrophyOption" style="display:block;margin-bottom:7px;font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;">SELECT PACKAGE</label>
+            <select id="ps3TrophyOption" style="width:100%;padding:12px 14px;border-radius:8px;border:1px solid #3a3a42;background:#151518;color:#fff;font:inherit;">
+              <option value="2" data-link="https://buy.stripe.com/5kQ8wH77FfD89xngGT5AQ12">1 Game — $2</option>
+              <option value="8" data-link="https://buy.stripe.com/bJe8wHbnVdv06lb0HV5AQ13">5 Game Pack — $8</option>
+              <option value="15" data-link="https://buy.stripe.com/5kQfZ963B4YucJz3U75AQ14">10 Game Pack — $15</option>
+              <option value="ticket">Higher Amounts — Discuss via ticket</option>
+            </select>
+          </div>
+          <div class="product-bottom">
+            <div class="price"><small>FROM</small><strong id="ps3TrophyPrice">$2.00</strong></div>
+            <a href="https://buy.stripe.com/5kQ8wH77FfD89xngGT5AQ12" class="buy-btn sellix-link" id="ps3TrophyBuy">Buy Product <span>→</span></a>
+          </div>
+        </article>
+
+        <article class="product-card" data-category="psn" data-product-id="modded-ps-avatars">
+          <div class="badge hot">PS4 / PS5</div>
+          <div class="product-image">
+            <img src="products\modavatar.png" alt="Modded PlayStation Avatars" loading="lazy" onerror="this.closest('.product-image').classList.add('img-error')">
+            <div class="product-icon">PSN</div>
+          </div>
+          <div class="product-meta"><span>PSN AVATAR</span><span class="stock"><i></i> AVAILABLE</span></div>
+          <h3>Modded PlayStation Avatars</h3>
+          <p>Choose whichever available avatar you want from the video.</p>
+          <ul>
+            <li>You pick whichever avatar you want in the video</li>
+            <li>This is a soft unlock — once you change your avatar, it's gone and you'll need to purchase again</li>
+            <li>Transfers to PS4 / PS5</li>
+          </ul>
+          <a href="https://youtu.be/VGbViraPpzo?is=MNurNSm2ClRHMXqI" target="_blank" rel="noreferrer" class="secondary-btn" style="display:inline-flex;margin:4px 0 18px;">View All Avatars Here <span style="margin-left:8px;">→</span></a>
+          <div class="product-bottom">
+            <div class="price"><small>PRICE</small><strong>$5.00</strong></div>
+            <a href="https://buy.stripe.com/28E5kveA7gHcfVLaiv5AQ11" class="buy-btn sellix-link">Buy Product <span>→</span></a>
+          </div>
+        </article>
+
+        <article class="product-card featured" data-category="accounts" data-product-id="premium-modded-account">
+          <div class="badge popular">MOST POPULAR</div>
+          <div class="product-image">
+            <img src="products\premium.png" alt="Premium Modded Account" loading="lazy" onerror="this.closest('.product-image').classList.add('img-error')">
+            <div class="product-icon">A</div>
+          </div>
+          <div class="product-meta"><span>ACCOUNT</span><span class="stock"><i></i> IN STOCK</span></div>
+          <h3>Premium Modded Account</h3>
+          <p>Pre-configured account package with selectable progression options and account details delivered after purchase.</p>
+          <ul>
+            <li>Multiple platform options</li>
+            <li>Custom package variants</li>
+            <li>Order support included</li>
+          </ul>
+          <div class="bot-lobby-selector" style="margin: 14px 0 18px;">
+            <label for="premiumAccountOption" style="display:block;margin-bottom:7px;font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;">SELECT ACCOUNT</label>
+            <select id="premiumAccountOption" style="width:100%;padding:12px 14px;border-radius:8px;border:1px solid #3a3a42;background:#151518;color:#fff;font:inherit;">
+              <option value="30" data-link="https://buy.stripe.com/28EdR1fEbgHc10Rbmz5AQ15">BO3 Pre-made Modded Account — $30</option>
+              <option value="30" data-link="https://buy.stripe.com/cNi14f3VtgHc9xn62f5AQ16">Cold War Pre-Made Modded Zombies Account — $30</option>
+              <option value="60" data-link="https://buy.stripe.com/3cI4gr77Fdv0aBrbmz5AQ17" data-paused="true">BO2 Pre-made Modded Account — $60 — Temporarily Unavailable</option>
+            </select>
+          </div>
+          <div class="product-bottom">
+            <div class="price"><small>PRICE</small><strong id="premiumAccountPrice">$30.00</strong></div>
+            <a href="https://buy.stripe.com/28EdR1fEbgHc10Rbmz5AQ15" class="buy-btn sellix-link" id="premiumAccountBuy">Buy Product <span>→</span></a>
+          </div>
+        </article>
+
+        
+
+        <article class="product-card" data-category="bots" data-product-id="bo7-bot-lobbies">
+          <div class="badge hot">FAST DELIVERY</div>
+          <div class="product-image">
+            <img src="products\bo7bot.png" alt="Bot Lobby Session" loading="lazy" onerror="this.closest('.product-image').classList.add('img-error')">
+            <div class="product-icon">L</div>
+          </div>
+          <div class="product-meta"><span>LOBBY</span><span class="stock"><i></i> AVAILABLE</span></div>
+          <h3>BO7 Bot Lobbies</h3>
+          <p>Select the BO7 bot lobby package that fits what you need.</p>
+          <ul>
+            <li>1 game, 5 games, 10 games, 30 minutes, 1 hour, and FFA Nuke Calling Card options</li>
+            <li>Simple package selection</li>
+            <li>Discord support</li>
+          </ul>
+          <div class="bot-lobby-selector" style="margin: 14px 0 18px;">
+            <label for="bo7LobbyOption" style="display:block;margin-bottom:7px;font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;">SELECT PACKAGE</label>
+            <select id="bo7LobbyOption" style="width:100%;padding:12px 14px;border-radius:8px;border:1px solid #3a3a42;background:#151518;color:#fff;font:inherit;">
+              <option value="5" data-link="https://buy.stripe.com/eVq5kvbnVgHcfVL9er5AQ0L">1 Game — $5</option>
+              <option value="20" data-link="https://buy.stripe.com/8x27sD8bJ8aGfVLduH5AQ0M">5 Games — $20</option>
+              <option value="35" data-link="https://buy.stripe.com/8x29AL9fNez48tjfCP5AQ0N">10 Games — $35</option>
+              <option value="8" data-link="https://buy.stripe.com/4gMeV5dw376CcJzfCP5AQ0O">30 Minutes — $8</option>
+              <option value="15" data-link="https://buy.stripe.com/bJe6ozeA776CcJzfCP5AQ0P">1 Hour — $15</option>
+              <option value="50" data-link="https://buy.stripe.com/00w28j9fN62ygZPgGT5AQ0Q">FFA Nuke Calling Card — $50</option>
+            </select>
+          </div>
+          <div class="product-bottom">
+            <div class="price"><small>FROM</small><strong id="bo7LobbyPrice">$5.00</strong></div>
+            <a href="https://buy.stripe.com/eVq5kvbnVgHcfVL9er5AQ0L" class="buy-btn sellix-link" id="bo7LobbyBuy">Buy Product <span>→</span></a>
+          </div>
+        </article>
+
+        <article class="product-card" data-category="bots" data-product-id="bo7-ranked-bot-lobbies">
+          <div class="badge hot">RANKED</div>
+          <div class="product-image">
+            <img src="products\bo7bot.png" alt="BO7 Multiplayer Ranked Bot Lobbies" loading="lazy" onerror="this.closest('.product-image').classList.add('img-error')">
+            <div class="product-icon">R</div>
+          </div>
+          <div class="product-meta"><span>RANKED LOBBY</span><span class="stock"><i></i> AVAILABLE</span></div>
+          <h3>BO7 Multiplayer Ranked Bot Lobbies</h3>
+          <p>Ranked bot lobby services for BO7 Multiplayer and Warzone on any platform.</p>
+          <ul>
+            <li>Ranked Lobby = You vs bots</li>
+            <li>Ranked Game = Played for you</li>
+            <li>Bronze → Iridescent available for MP or WZ</li>
+          </ul>
+          <div class="bot-lobby-selector" style="margin: 14px 0 18px;">
+            <label for="bo7RankedOption" style="display:block;margin-bottom:7px;font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;">SELECT PACKAGE</label>
+            <select id="bo7RankedOption" style="width:100%;padding:12px 14px;border-radius:8px;border:1px solid #3a3a42;background:#151518;color:#fff;font:inherit;">
+              <option value="8" data-link="https://buy.stripe.com/7sYdR1gIfez4fVL1LZ5AQ0R">1 Ranked Lobby — $8</option>
+              <option value="35" data-link="https://buy.stripe.com/6oU5kv4Zx8aG24VfCP5AQ0S">5 Ranked Lobbies — $35</option>
+              <option value="60" data-link="https://buy.stripe.com/6oU14f8bJaiOaBr4Yb5AQ0T">10 Ranked Lobbies — $60</option>
+              <option value="250" data-link="https://buy.stripe.com/28E7sDfEb8aG7pfgGT5AQ0U">Bronze → Iridescent (MP or WZ) — $250</option>
+            </select>
+          </div>
+          <div class="product-bottom">
+            <div class="price"><small>FROM</small><strong id="bo7RankedPrice">$8.00</strong></div>
+            <a href="https://buy.stripe.com/7sYdR1gIfez4fVL1LZ5AQ0R" class="buy-btn sellix-link" id="bo7RankedBuy">Buy Product <span>→</span></a>
+          </div>
+        </article>
+
+        <article class="product-card" data-category="bots" data-product-id="bo6-bot-lobbies">
+          <div class="badge hot">MULTIPLAYER</div>
+          <div class="product-image">
+            <img src="products\bo6bot.png" alt="BO6 Multiplayer Bot Lobbies" loading="lazy" onerror="this.closest('.product-image').classList.add('img-error')">
+            <div class="product-icon">BO6</div>
+          </div>
+          <div class="product-meta"><span>LOBBY</span><span class="stock"><i></i> AVAILABLE</span></div>
+          <h3>BO6 Multiplayer Bot Lobbies</h3>
+          <p>Select the BO6 Multiplayer bot lobby package that fits what you need.</p>
+          <ul>
+            <li>1 Game, 30 Minute, and 1 Hour options</li>
+            <li>Any platform</li>
+            <li>Discord support</li>
+          </ul>
+          <div class="bot-lobby-selector" style="margin: 14px 0 18px;">
+            <label for="bo6LobbyOption" style="display:block;margin-bottom:7px;font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;">SELECT PACKAGE</label>
+            <select id="bo6LobbyOption" style="width:100%;padding:12px 14px;border-radius:8px;border:1px solid #3a3a42;background:#151518;color:#fff;font:inherit;">
+              <option value="5" data-link="https://buy.stripe.com/7sY8wH1Nl8aG9xncqD5AQ0V">1 Game — $5</option>
+              <option value="8" data-link="https://buy.stripe.com/14A3cneA7fD8cJzcqD5AQ0W">30 Minutes — $8</option>
+              <option value="15" data-link="https://buy.stripe.com/bJe3cnajRgHc38Zbmz5AQ0X">1 Hour — $15</option>
+            </select>
+          </div>
+          <div class="product-bottom">
+            <div class="price"><small>FROM</small><strong id="bo6LobbyPrice">$5.00</strong></div>
+            <a href="https://buy.stripe.com/7sY8wH1Nl8aG9xncqD5AQ0V" class="buy-btn sellix-link" id="bo6LobbyBuy">Buy Product <span>→</span></a>
+          </div>
+        </article>
+
+        <article class="product-card" data-category="bots" data-paused="true" data-product-id="bo2-bot-lobbies">
+          <div class="product-image">
+            <img src="products\bo2bot.png" alt="BO2 Multiplayer Bot Lobbies — PS4/PS5" loading="lazy" onerror="this.closest('.product-image').classList.add('img-error')">
+            <div class="product-icon">BO2</div>
+          </div>
+          <div class="product-meta"><span>LOBBY • PS4 / PS5</span><span class="stock" style="color:#aaaab4;"><i style="background:#777782;"></i> TEMPORARILY UNAVAILABLE</span></div>
+          <h3>BO2 Multiplayer Bot Lobbies — PS4/PS5</h3>
+          <p>Select the BO2 Multiplayer bot lobby package that fits what you need.</p>
+          <ul>
+            <li>PS4 / PS5</li>
+            <li>1 Game, 30 Min, and 1 Hour options</li>
+            <li>Discord support</li>
+          </ul>
+          <div class="bot-lobby-selector" style="margin: 14px 0 18px;">
+            <label for="bo2LobbyOption" style="display:block;margin-bottom:7px;font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;">SELECT PACKAGE</label>
+            <select id="bo2LobbyOption" style="width:100%;padding:12px 14px;border-radius:8px;border:1px solid #3a3a42;background:#151518;color:#fff;font:inherit;">
+              <option value="5" data-link="https://buy.stripe.com/00wfZ9dw32Qm24VfCP5AQ0Y">1 Game — $5</option>
+              <option value="10" data-link="https://buy.stripe.com/aFa7sD0Jh1MifVL8an5AQ0Z">30 Min — $10</option>
+              <option value="20" data-link="https://buy.stripe.com/bJeeV5fEb62y7pf9er5AQ10">1 Hour — $20</option>
+            </select>
+          </div>
+          <div class="product-bottom">
+            <div class="price"><small>FROM</small><strong id="bo2LobbyPrice">$5.00</strong></div>
+            <a href="#" class="buy-btn" id="bo2LobbyBuy" aria-disabled="true" style="pointer-events:none;opacity:.58;cursor:not-allowed;">Temporarily Unavailable</a>
+          </div>
+        </article>
+
+        
+
+        <article class="product-card" data-category="bo3" data-subcategory="divinium" data-product-id="liquid-divinium">
+          <div class="product-image">
+            <img src="products\Liquid.png" alt="Liquid Divinium" loading="lazy" onerror="this.closest('.product-image').classList.add('img-error')">
+            <div class="product-icon">DIV</div>
+          </div>
+          <div class="product-meta"><span>DIVINIUM</span><span class="stock"><i></i> IN STOCK</span></div>
+          <h3>Liquid Divinium</h3>
+          <p>Select your Liquid Divinium amount for Call of Duty Black Ops 3.</p>
+          <ul>
+            <li>Currently working for PS4/PS5/PC</li>
+            <li>Support after checkout + Screenshare service provided</li>
+          </ul>
+          <div class="bot-lobby-selector" style="margin: 14px 0 18px;">
+            <label for="bo3DivOption" style="display:block;margin-bottom:7px;font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;">SELECT SERVICE</label>
+            <select id="bo3DivOption" style="width:100%;padding:12px 14px;border-radius:8px;border:1px solid #3a3a42;background:#151518;color:#fff;font:inherit;">
+              <option value="6" data-link="https://buy.stripe.com/00wcMX0Jh3UqgZP3U75AQ06" data-details="Currently working for PS4/PS5/PC">10,000 Liquid Divinium — $6</option>
+              <option value="8" data-link="https://buy.stripe.com/6oUaEP2Rp2QmbFvcqD5AQ01" data-details="Currently working for PS4/PS5/PC">50,000 Liquid Divinium — $8</option>
+              <option value="13" data-link="https://buy.stripe.com/5kQfZ9dw30Ie9xn1LZ5AQ05" data-details="Currently working for PS4/PS5/PC">150,000 Liquid Divinium — $13</option>
+              <option value="18" data-link="https://buy.stripe.com/bJebITcrZ1MieRHbmz5AQ04" data-details="Currently working for PS4/PS5/PC">500,000 Liquid Divinium — $18</option>
+              <option value="28" data-link="https://buy.stripe.com/14A6oz2RpaiO4d39er5AQ03" data-details="Comes with a 1,000,000 Liquid Divinium Buyer Role in the discord server">1,000,000 Liquid Divinium — $28</option>
+              <option value="28" data-link="https://buy.stripe.com/7sY4gr8bJ4YuaBr4Yb5AQ02" data-details="Liquid Divinium + Crypto Keys package">200,000 Liquid Divinium + 50,000 Crypto Keys — $28</option>
+            </select>
+          </div>
+          <div class="product-bottom">
+            <div class="price"><small>FROM</small><strong id="bo3DivPrice">$6.00</strong></div>
+            <a href="https://buy.stripe.com/00wcMX0Jh3UqgZP3U75AQ06" class="buy-btn sellix-link" id="bo3DivBuy">Buy Product <span>→</span></a>
+          </div>
+        </article>
+
+        <article class="product-card" data-category="bo3" data-subcategory="crypto" data-product-id="crypto-keys">
+          <div class="product-image">
+            <img src="products\keys.png" alt="Crypto Keys" loading="lazy" onerror="this.closest('.product-image').classList.add('img-error')">
+            <div class="product-icon">KEYS</div>
+          </div>
+          <div class="product-meta"><span>CRYPTO KEYS</span><span class="stock"><i></i> IN STOCK</span></div>
+          <h3>Crypto Keys</h3>
+          <p>Select your Crypto Keys amount for Call of Duty Black Ops 3.</p>
+          <ul>
+            <li>Currently working for PS4/PS5/PC</li>
+            <li>Support after checkout + Screenshare service provided</li>
+          </ul>
+          <div class="bot-lobby-selector" style="margin: 14px 0 18px;">
+            <label for="bo3CryptoOption" style="display:block;margin-bottom:7px;font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;">SELECT SERVICE</label>
+            <select id="bo3CryptoOption" style="width:100%;padding:12px 14px;border-radius:8px;border:1px solid #3a3a42;background:#151518;color:#fff;font:inherit;">
+              <option value="8" data-link="https://buy.stripe.com/bJe3cn2Rpdv0eRH4Yb5AQ07" data-details="Currently working for PS4/PS5/PC">5,000 Crypto Keys — $8</option>
+              <option value="10" data-link="https://buy.stripe.com/bJe7sDfEb76C9xn62f5AQ08" data-details="Currently working for PS4/PS5/PC">10,000 Crypto Keys — $10</option>
+              <option value="15" data-link="https://buy.stripe.com/3cIaEP0JhgHc6lb8an5AQ09" data-details="Currently working for PS4/PS5/PC">20,000 Crypto Keys — $15</option>
+              <option value="20" data-link="https://buy.stripe.com/eVq8wH63B62ygZP1LZ5AQ0a" data-details="Currently working for PS4/PS5/PC">50,000 Crypto Keys — $20</option>
+              <option value="25" data-link="https://buy.stripe.com/cNi5kvcrZgHcgZPduH5AQ0b" data-details="Currently working for PS4/PS5/PC">100,000 Crypto Keys — $25</option>
+            </select>
+          </div>
+          <div class="product-bottom">
+            <div class="price"><small>FROM</small><strong id="bo3CryptoPrice">$8.00</strong></div>
+            <a href="https://buy.stripe.com/bJe3cn2Rpdv0eRH4Yb5AQ07" class="buy-btn sellix-link" id="bo3CryptoBuy">Buy Product <span>→</span></a>
+          </div>
+        </article>
+
+        <article class="product-card" data-category="bo3" data-subcategory="packages" data-product-id="bo3-packages">
+          <div class="product-image">
+            <img src="products\combo.png" alt="BO3 Packages" loading="lazy" onerror="this.closest('.product-image').classList.add('img-error')">
+            <div class="product-icon">PKG</div>
+          </div>
+          <div class="product-meta"><span>PACKAGE</span><span class="stock"><i></i> IN STOCK</span></div>
+          <h3>BO3 Packages</h3>
+          <p>Select from the existing Black Ops 3 package listings.</p>
+          <p id="bo3PackageDetails" style="margin-top:10px;"><strong>Includes</strong><br>Max Prestige + Max Level • Max Level Weapons • All Zombie Camos • Easter Egg Completions (Spawn with RK5) • Custom name color of your choice • All Calling Cards Unlocked • 100% Zombies Completion</p>
+          <ul>
+            <li>Currently working for PS4/PS5/PC</li>
+            <li>Support after checkout + Screenshare service provided</li>
+          </ul>
+          <div class="bot-lobby-selector" style="margin: 14px 0 18px;">
+            <label for="bo3PackageOption" style="display:block;margin-bottom:7px;font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;">SELECT SERVICE</label>
+            <select id="bo3PackageOption" style="width:100%;padding:12px 14px;border-radius:8px;border:1px solid #3a3a42;background:#151518;color:#fff;font:inherit;">
+              <option value="15" data-link="https://buy.stripe.com/4gM28j8bJez410RduH5AQ0c" data-details="Max Prestige + Max Level • Max Level Weapons • All Zombie Camos • Easter Egg Completions (Spawn with RK5) • Custom name color of your choice • All Calling Cards Unlocked • 100% Zombies Completion">Zombies Package — $15</option>
+              <option value="15" data-link="https://buy.stripe.com/eVqfZ94Zxdv024V0HV5AQ0d" data-details="Max Prestige + Max Level • Max Level Weapons • All Multiplayer Camos (Dark Matter) • All Hero Gear • All Calling Cards Unlocked • 100% Multiplayer Completion • A lot of Blackjack Tokens">Multiplayer Package — $15</option>
+              <option value="25" data-link="https://buy.stripe.com/00waEP3VtfD824VcqD5AQ0e" data-details="MP/ZM Max Prestige + Max Level • MP/ZM Max Level Weapons • MP/ZM Camos (Dark Matter + Red Hex) • All MP/ZM Calling Cards • MP/ZM 100% Completion • Easter Egg Completions (Spawn with RK5) • Custom Zombies Name Color • Hero Gear • Black Jack Tokens">Combo Package — $25</option>
+            </select>
+          </div>
+          <div class="product-bottom">
+            <div class="price"><small>FROM</small><strong id="bo3PackagePrice">$15.00</strong></div>
+            <a href="https://buy.stripe.com/4gM28j8bJez410RduH5AQ0c" class="buy-btn sellix-link" id="bo3PackageBuy">Buy Product <span>→</span></a>
+          </div>
+        </article>
+
+        <article class="product-card" data-category="bo3" data-subcategory="single" data-product-id="bo3-single-unlocks">
+          <div class="product-image">
+            <img src="products\completion.png" alt="BO3 Single Unlocks" loading="lazy" onerror="this.closest('.product-image').classList.add('img-error')">
+            <div class="product-icon">BO3</div>
+          </div>
+          <div class="product-meta"><span>SINGLE UNLOCK</span><span class="stock"><i></i> IN STOCK</span></div>
+          <h3>BO3 Single Unlocks</h3>
+          <p>Select an individual Black Ops 3 unlock service.</p>
+          <ul>
+            <li>Currently working for PS4/PS5/PC</li>
+            <li>Support after checkout</li>
+          </ul>
+          <div class="bot-lobby-selector" style="margin: 14px 0 18px;">
+            <label for="bo3SingleOption" style="display:block;margin-bottom:7px;font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;">SELECT SERVICE</label>
+            <select id="bo3SingleOption" style="width:100%;padding:12px 14px;border-radius:8px;border:1px solid #3a3a42;background:#151518;color:#fff;font:inherit;">
+              <option value="10" data-link="https://buy.stripe.com/14A6ozajR8aGdND62f5AQ0f" data-details="Individual unlock for Call of Duty Black Ops 3">Zombies Level 1000 — $10</option>
+              <option value="10" data-link="https://buy.stripe.com/5kQ4gr1Nlez49xnduH5AQ0g" data-details="Individual unlock for Call of Duty Black Ops 3">Zombies 100% Completion / Camos / Calling Cards — $10</option>
+              <option value="5" data-link="https://buy.stripe.com/dRm28jajRcqWcJz9er5AQ0h" data-details="Individual unlock for Call of Duty Black Ops 3">Zombies Colored Name — $5</option>
+              <option value="3" data-link="https://buy.stripe.com/bJe8wHcrZ76CbFv0HV5AQ0i" data-details="Individual unlock for Call of Duty Black Ops 3">Zombies Colored Name [Re-apply] — $3</option>
+              <option value="10" data-link="https://buy.stripe.com/cNi00b63BcqW7pffCP5AQ0j" data-details="Individual unlock for Call of Duty Black Ops 3">Easter Egg Completion (Spawn with RK5) — $10</option>
+              <option value="10" data-link="https://buy.stripe.com/eVqbITdw3dv0dNDfCP5AQ0k" data-details="Individual unlock for Call of Duty Black Ops 3">Multiplayer Level 1000 — $10</option>
+              <option value="10" data-link="https://buy.stripe.com/7sY9AL8bJ2Qm5h72Q35AQ0l" data-details="Individual unlock for Call of Duty Black Ops 3">Multiplayer 100% Completion / Camos / Calling Cards — $10</option>
+              <option value="10" data-link="https://buy.stripe.com/dRm9AL4ZxfD8gZPbmz5AQ0m" data-details="Individual unlock for Call of Duty Black Ops 3">All Hero Gear — $10</option>
+              <option value="5" data-link="https://buy.stripe.com/00w00b77F9eKeRH1LZ5AQ0n" data-details="Individual unlock for Call of Duty Black Ops 3">100x BlackJack Tokens — $5</option>
+              <option value="5" data-link="https://buy.stripe.com/dRmdR1eA7gHc38Z4Yb5AQ0o" data-details="Individual unlock for Call of Duty Black Ops 3">255x Multiplayer Unlock Tokens — $5</option>
+              <option value="10" data-link="https://buy.stripe.com/eVq6oz9fN2Qm5h78an5AQ0J" data-details="Individual unlock for Call of Duty Black Ops 3">Platinum Trophy — $10</option>
+            </select>
+          </div>
+          <div class="product-bottom">
+            <div class="price"><small>FROM</small><strong id="bo3SinglePrice">$10.00</strong></div>
+            <a href="https://buy.stripe.com/14A6ozajR8aGdND62f5AQ0f" class="buy-btn sellix-link" id="bo3SingleBuy">Buy Product <span>→</span></a>
+          </div>
+        </article>
+
+        <article class="product-card" data-category="bo3" data-subcategory="spend" data-product-id="auto-crypto-divinium">
+          <div class="product-image">
+            <img src="products\spendserv.png" alt="Auto Crypto / Divinium Spending" loading="lazy" onerror="this.closest('.product-image').classList.add('img-error')">
+            <div class="product-icon">AFK</div>
+          </div>
+          <div class="product-meta"><span>SPEND SERVICE</span><span class="stock"><i></i> IN STOCK</span></div>
+          <h3>Auto Crypto / Divinium Spending</h3>
+          <p>Select how long you want the automated spending service to run.</p>
+          <ul>
+            <li>Currently working for PS4/PS5/PC</li>
+            <li>Support after checkout</li>
+            <li>We Recommend using this service when you are going offline</li>
+          </ul>
+          <div class="bot-lobby-selector" style="margin: 14px 0 18px;">
+            <label for="bo3SpendOption" style="display:block;margin-bottom:7px;font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;">SELECT SERVICE</label>
+            <select id="bo3SpendOption" style="width:100%;padding:12px 14px;border-radius:8px;border:1px solid #3a3a42;background:#151518;color:#fff;font:inherit;">
+              <option value="15" data-link="https://buy.stripe.com/8x24grgIfgHc5h7fCP5AQ0q" data-details="Automated spending for Crypto and Divinium">1 Hour Of Auto Crypto/Divinium Spending — $15</option>
+              <option value="35" data-link="https://buy.stripe.com/fZueV5bnV0Ie38ZfCP5AQ0r" data-details="Automated spending for Crypto and Divinium">3 Hour Of Auto Crypto/Divinium Spending — $35</option>
+              <option value="60" data-link="https://buy.stripe.com/bJedR1ajR3Uq38Z2Q35AQ0s" data-details="Automated spending for Crypto and Divinium">5 Hour Of Auto Crypto/Divinium Spending — $60</option>
+            </select>
+          </div>
+          <div class="product-bottom">
+            <div class="price"><small>FROM</small><strong id="bo3SpendPrice">$15.00</strong></div>
+            <a href="https://buy.stripe.com/8x24grgIfgHc5h7fCP5AQ0q" class="buy-btn sellix-link" id="bo3SpendBuy">Buy Product <span>→</span></a>
+          </div>
+        </article>
+
+        <article class="product-card" data-category="bo4" data-subcategory="mp" data-paused="true" data-product-id="bo4-multiplayer">
+          <div class="product-image">
+            <img src="products\allin1.png" alt="BO4 Multiplayer Unlocks & Levels" loading="lazy" onerror="this.closest('.product-image').classList.add('img-error')">
+            <div class="product-icon">MP</div>
+          </div>
+          <div class="product-meta"><span>UNLOCKS & LEVELS</span><span class="stock"><i></i> IN STOCK</span></div>
+          <h3>BO4 Multiplayer Unlocks & Levels</h3>
+          <p>Select your Call of Duty Black Ops 4 Multiplayer service.</p>
+          <ul>
+            <li>Currently working for PS4/PS5</li>
+            <li>Support after checkout</li>
+          </ul>
+          <div class="bot-lobby-selector" style="margin: 14px 0 18px;">
+            <label for="bo4MpOption" style="display:block;margin-bottom:7px;font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;">SELECT SERVICE</label>
+            <select id="bo4MpOption" style="width:100%;padding:12px 14px;border-radius:8px;border:1px solid #3a3a42;background:#151518;color:#fff;font:inherit;">
+              <option value="45" data-link="https://buy.stripe.com/fZu4grbnVgHc38Z76j5AQ0t" data-details="Max Level in Call of Duty Black Ops 4 Multiplayer">Level 1000 — $45</option>
+              <option value="35" data-link="https://buy.stripe.com/6oU8wH2RpcqWgZP9er5AQ0u" data-details="Unlock all in Call of Duty Black Ops 4 Multiplayer">Unlock All — $35</option>
+              <option value="50" data-link="https://buy.stripe.com/6oU28j63Bdv0fVLaiv5AQ0v" data-details="Unlock all + Level 1000">All-In-One Package — $50</option>
+            </select>
+          </div>
+          <div class="product-bottom">
+            <div class="price"><small>FROM</small><strong id="bo4MpPrice">$45.00</strong></div>
+            <a href="https://buy.stripe.com/fZu4grbnVgHc38Z76j5AQ0t" class="buy-btn sellix-link" id="bo4MpBuy">Buy Product <span>→</span></a>
+          </div>
+        </article>
+
+        <article class="product-card" data-category="bo4" data-subcategory="crate" data-paused="true" data-product-id="bo4-reserve-crates">
+          <div class="product-image">
+            <img src="products\5kcrates.png" alt="BO4 Reserve Crates" loading="lazy" onerror="this.closest('.product-image').classList.add('img-error')">
+            <div class="product-icon">CASE</div>
+          </div>
+          <div class="product-meta"><span>RESERVE CRATES</span><span class="stock"><i></i> IN STOCK</span></div>
+          <h3>BO4 Reserve Crates</h3>
+          <p>Select your Reserve Crates amount.</p>
+          <ul>
+            <li>Currently working for PS4/PS5</li>
+            <li>Support after checkout</li>
+          </ul>
+          <div class="bot-lobby-selector" style="margin: 14px 0 18px;">
+            <label for="bo4CrateOption" style="display:block;margin-bottom:7px;font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;">SELECT SERVICE</label>
+            <select id="bo4CrateOption" style="width:100%;padding:12px 14px;border-radius:8px;border:1px solid #3a3a42;background:#151518;color:#fff;font:inherit;">
+              <option value="35" data-link="https://buy.stripe.com/aFaaEP63B62ygZP62f5AQ0w" data-details="5,000 Reserve Crates">5,000 Reserve Crates — $35</option>
+              <option value="60" data-link="https://buy.stripe.com/bJebIT77FbmSgZPduH5AQ0x" data-details="10,000 Reserve Crates">10,000 Reserve Crates — $60</option>
+            </select>
+          </div>
+          <div class="product-bottom">
+            <div class="price"><small>FROM</small><strong id="bo4CratePrice">$35.00</strong></div>
+            <a href="https://buy.stripe.com/aFaaEP63B62ygZP62f5AQ0w" class="buy-btn sellix-link" id="bo4CrateBuy">Buy Product <span>→</span></a>
+          </div>
+        </article>
+
+        <article class="product-card" data-category="bo4" data-subcategory="clan" data-paused="true" data-product-id="bo4-clan-tag">
+          <div class="product-image">
+            <img src="products\clantagb04.png" alt="BO4 Colored Clan Tag" loading="lazy" onerror="this.closest('.product-image').classList.add('img-error')">
+            <div class="product-icon">CLAN</div>
+          </div>
+          <div class="product-meta"><span>CLAN TAG</span><span class="stock"><i></i> IN STOCK</span></div>
+          <h3>BO4 Colored Clan Tag</h3>
+          <p>Select the standard service or discounted re-apply service.</p>
+          <ul>
+            <li>Currently working for PS4/PS5</li>
+            <li>Support after checkout</li>
+          </ul>
+          <div class="bot-lobby-selector" style="margin: 14px 0 18px;">
+            <label for="bo4ClanOption" style="display:block;margin-bottom:7px;font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;">SELECT SERVICE</label>
+            <select id="bo4ClanOption" style="width:100%;padding:12px 14px;border-radius:8px;border:1px solid #3a3a42;background:#151518;color:#fff;font:inherit;">
+              <option value="45" data-link="https://buy.stripe.com/6oU7sD2Rp0IeaBreyL5AQ0y" data-details="Colored Clan Tag">Colored Clan Tag — $45</option>
+              <option value="20" data-link="https://buy.stripe.com/14AbITgIf4YugZP1LZ5AQ0z" data-details="Clan Tag Re-Apply Service at a discounted price.">Colored Clan Tag [Re-Apply] — $20</option>
+            </select>
+          </div>
+          <div class="product-bottom">
+            <div class="price"><small>FROM</small><strong id="bo4ClanPrice">$45.00</strong></div>
+            <a href="https://buy.stripe.com/6oU7sD2Rp0IeaBreyL5AQ0y" class="buy-btn sellix-link" id="bo4ClanBuy">Buy Product <span>→</span></a>
+          </div>
+        </article>
+
+        <article class="product-card" data-category="bo4" data-subcategory="rare" data-paused="true" data-product-id="bo4-events">
+          <div class="product-image">
+            <img src="products\bo4event.png" alt="BO4 MP / Zombies Events" loading="lazy" onerror="this.closest('.product-image').classList.add('img-error')">
+            <div class="product-icon">PKG</div>
+          </div>
+          <div class="product-meta"><span>MP/ZM EVENT</span><span class="stock"><i></i> IN STOCK</span></div>
+          <h3>BO4 MP / Zombies Events</h3>
+          <p>Select from the existing BO4 event listings.</p>
+          <ul>
+            <li>Currently working for PS4/PS5</li>
+            <li>Support after checkout</li>
+          </ul>
+          <div class="bot-lobby-selector" style="margin: 14px 0 18px;">
+            <label for="bo4EventOption" style="display:block;margin-bottom:7px;font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;">SELECT SERVICE</label>
+            <select id="bo4EventOption" style="width:100%;padding:12px 14px;border-radius:8px;border:1px solid #3a3a42;background:#151518;color:#fff;font:inherit;">
+              <option value="45" data-link="https://buy.stripe.com/4gM14f0JhfD838Z1LZ5AQ0A" data-details="">Barbarian Bundle + Road Trip Reactive Camo Multiplayer — MP Events — $45</option>
+              <option value="45" data-link="https://buy.stripe.com/4gMfZ92Rp3Uq38ZfCP5AQ0B" data-details="">Winter Bundle + Face Paints Multiplayer — MP Events — $45</option>
+              <option value="45" data-link="https://buy.stripe.com/8x200b77FgHccJz9er5AQ0C" data-details="">Halloween Bundle + Face Paints Multiplayer — MP Events — $45</option>
+              <option value="45" data-link="https://buy.stripe.com/cNi28jeA71MibFv8an5AQ0D" data-details="">Seasons 2–8 Multiplayer — MP Events — $45</option>
+              <option value="16" data-link="https://buy.stripe.com/3cIaEP63B2Qm9xn1LZ5AQ0E" data-details="">Shamrock & Awe Bundle Multiplayer — MP Events — $16</option>
+              <option value="100" data-link="https://buy.stripe.com/14A7sDbnVfD8cJz3U75AQ0F" data-details="Events All-In-One Includes: Shamrock &amp; Awe, Seasons 2-8, Barbarian (Road Trip), Winter + Face Paints, Halloween + Face Paints">All Events AIO Multiplayer — MP Events — $100</option>
+              <option value="35" data-link="https://buy.stripe.com/4gMbITfEb0IeeRHaiv5AQ0G" data-details="">Special Face Paints — Zombie Events — $35</option>
+            </select>
+          </div>
+          <div class="product-bottom">
+            <div class="price"><small>FROM</small><strong id="bo4EventPrice">$45.00</strong></div>
+            <a href="https://buy.stripe.com/4gM14f0JhfD838Z1LZ5AQ0A" class="buy-btn sellix-link" id="bo4EventBuy">Buy Product <span>→</span></a>
+          </div>
+        </article>
+
+      </div>
+    </section>
+
+    <section class="advantages">
+      <div class="container advantages-grid">
+        <div class="advantage">
+          <span>01</span>
+          <div><strong>Quick Fulfillment</strong><p>We keep buyers updated with our clear delivery expectations.</p></div>
+        </div>
+        <div class="advantage">
+          <span>02</span>
+          <div><strong>Trusted Support</strong><p>Open a ticket in the Discord server for support & completion of your order. <a href="https://discord.gg/liquidlab">Click Here<span></span></a></p></div>
+        </div>
+        <div class="advantage">
+          <span>03</span>
+          <div><strong>Secure Checkout</strong><p>Checkout via Stripe for a secure and seamless experience.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section container" id="reviews">
+      <div class="section-heading">
+        <div>
+          <div class="eyebrow"><span></span> CUSTOMER FEEDBACK</div>
+          <h2>Built around <em>trust</em></h2>
+        </div>
+        <div class="rating-box">
+          <strong>5.0</strong>
+          <div><span>★★★★★</span><small>Based on verified reviews via #feedback in discord</small></div>
+        </div>
+      </div>
+
+       <div class="review-grid">
+        <article class="review-card">
+          <div class="review-top"><span>★★★★★</span><small>Verified Buyer</small></div>
+          <p>“Everything went thru as planned”</p>
+          <!-- Optional proof image: add this block to any review, remove it for reviews with no image -->
+          <div class="review-media">
+            <img src="reviews\bo41.jpg" alt="Screenshot shared by darksoul98595 " loading="lazy">
+          </div>
+          <div class="review-user"><div class="avatar">DS</div><div><strong>darksoul98595</strong><small>BO4 Zombies AIO $50</small></div></div>
+        </article>
+        <article class="review-card">
+          <div class="review-top"><span>★★★★★</span><small>Verified Buyer</small></div>
+          <p>“Perfect service, communication was also great. definitely will be buying again”</p>
+          <!-- Optional proof image: add this block to any review, remove it for reviews with no image -->
+          <div class="review-media">
+            <img src="reviews\Perfect service, communication.jpg" alt="Screenshot shared by Ethan" loading="lazy">
+          </div>
+          <div class="review-user"><div class="avatar">E</div><div><strong>Ethan</strong><small>Liquid Divinium $13</small></div></div>
+        </article>
+        <article class="review-card">
+          <div class="review-top"><span>★★★★★</span><small>Verified Buyer</small></div>
+          <p>“Very fast and i was able to watch them do it entirely.”</p>
+          <div class="review-media">
+            <img src="reviews\very fast and i was able.png" alt="Screenshot shared by scxrface21" loading="lazy">
+          </div>
+          <div class="review-user"><div class="avatar">S</div><div><strong>scxrface21</strong><small>Liquid Divinium $8</small></div></div>
+        </article>
+        <article class="review-card">
+          <div class="review-top"><span>★★★★★</span><small>Verified Buyer</small></div>
+          <p>“Good service fast service and trustworthy”</p>
+          <div class="review-media">
+            <img src="reviews\good service fast service.png" alt="Screenshot shared by mexchill1870" loading="lazy">
+          </div>
+          <div class="review-user"><div class="avatar">M</div><div><strong>mexchill1870</strong><small>Crypto Keys $10</small></div></div>
+        </article>
+        <article class="review-card">
+          <div class="review-top"><span>★★★★★</span><small>Verified Buyer</small></div>
+          <p>“took like 5 minutes, and the guy is super chill”</p>
+          <div class="review-media">
+            <img src="reviews\took like 5 minutes.png" alt="Screenshot shared by jelqrr" loading="lazy">
+          </div>
+          <div class="review-user"><div class="avatar">J</div><div><strong>jelqrr</strong><small>Liquid Divinium $6</small></div></div>
+        </article>
+        <article class="review-card">
+          <div class="review-top"><span>★★★★★</span><small>Verified Buyer</small></div>
+          <p>“quick and easy”</p>
+          <div class="review-media">
+            <img src="reviews\quick and easy.png" alt="Screenshot shared by Hypno" loading="lazy">
+          </div>
+          <div class="review-user"><div class="avatar">H</div><div><strong>Hypno</strong><small>BO3 Zombie Package $15</small></div></div>
+        </article>
+        <article class="review-card">
+          <div class="review-top"><span>★★★★★</span><small>Verified Buyer</small></div>
+          <p>“I like the service of this staff”</p>
+          <div class="review-media">
+            <img src="reviews\i like the service of this staff.png" alt="Screenshot shared by liltrip" loading="lazy">
+          </div>
+          <div class="review-user"><div class="avatar">L</div><div><strong>liltrip</strong><small>BO3 Zombie Package $15</small></div></div>
+        </article>
+        <article class="review-card">
+          <div class="review-top"><span>★★★★★</span><small>Verified Buyer</small></div>
+          <p>“10 out of 10 service”</p>
+          <div class="review-media">
+            <img src="reviews\10 out of.png" alt="Screenshot shared by Certifi3d_Jay" loading="lazy">
+          </div>
+          <div class="review-user"><div class="avatar">C</div><div><strong>Certifi3d_Jay</strong><small>Liquid Divinium $6</small></div></div>
+        </article>
+        <article class="review-card">
+          <div class="review-top"><span>★★★★★</span><small>Verified Buyer</small></div>
+          <p>“I was skeptical really skeptical about this but I already sent my money but I got my service I wanted and it’s really good and fast”</p>
+          <div class="review-media">
+            <img src="reviews\skeptical.jpg" alt="Screenshot shared by mexchill1870" loading="lazy">
+          </div>
+          <div class="review-user"><div class="avatar">M</div><div><strong>mexchill1870</strong><small>Liquid Divinium $10</small></div></div>
+        </article>
+        <article class="review-card">
+          <div class="review-top"><span>★★★★★</span><small>Verified Buyer</small></div>
+          <p>“Awsome cool service”</p>
+          <div class="review-media">
+            <img src="reviews\awsome cool.jpg" alt="Screenshot shared by MOMLOVER62" loading="lazy">
+          </div>
+          <div class="review-user"><div class="avatar">M</div><div><strong>MOMLOVER62</strong><small>BO3 Zombie Package $15</small></div></div>
+        </article>
+        <article class="review-card">
+          <div class="review-top"><span>★★★★★</span><small>Verified Buyer</small></div>
+          <p>“Got 2 accounts done !!”</p>
+          <div class="review-media">
+            <img src="reviews\got 2 accounts done.png" alt="Screenshot shared by Certifi3d_Jay" loading="lazy">
+          </div>
+          <div class="review-user"><div class="avatar">C</div><div><strong>Certifi3d_Jay</strong><small>Liquid Divinium $16</small></div></div>
+        </article>
+        <article class="review-card">
+          <div class="review-top"><span>★★★★★</span><small>Verified Buyer</small></div>
+          <p>“Because it's good service”</p>
+          <div class="review-media">
+            <img src="reviews\Because it’s good service.jpg" alt="Screenshot shared by liltrip" loading="lazy">
+          </div>
+          <div class="review-user"><div class="avatar">L</div><div><strong>liltrip</strong><small>1 Million Liquid Divinium $28</small></div></div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section container" id="faq">
+      <div class="faq-wrap">
+        <div class="faq-intro">
+          <div class="eyebrow"><span></span> FAQ</div>
+          <h2>Questions before<br><em>checkout?</em></h2>
+          <p>LiquidLab FAQ</p>
+          <a href="https://discord.gg/liquidlab" target="_blank" rel="noreferrer" class="secondary-btn">Contact Support</a>
+        </div>
+
+        <div class="faq-list">
+          <details open>
+            <summary>How does ordering work?<span>+</span></summary>
+            <p>Choose a product, review the requirements, then use the secure Stripe checkout. After payment, follow the delivery instructions shown on the product page.</p>
+          </details>
+          <details open>
+            <summary>Which Call of Duty games are supported?<span>+</span></summary>
+            <p>BO1, BO2, BO3, BO4, BO6, BO7, and Cold War.</p>
+          </details>
+          <details open>
+            <summary>How long does delivery take?<span>+</span></summary>
+            <p>Delivery is based upon which package is purchased. Some packages are instant, while some are required to be completed by hand by our team. AFTER purchase, please make a ticket in our Discord so that we can help you with your order.</p>
+          </details>
+          <details open class="support-always-open">
+            <summary>Where can I get support?<span>+</span></summary>
+            <div style="padding:18px 0 6px;">
+              <div style="max-width:430px;border:1px solid #303038;border-radius:14px;background:#111114;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,.28);">
+                <div style="height:54px;background:linear-gradient(135deg,#1a1127,#2b1941 55%,#17171c);border-bottom:1px solid #2d2d35;"></div>
+                <div style="padding:0 18px 18px;">
+                  <div style="display:flex;align-items:center;gap:13px;margin-top:-24px;">
+                    <img src="logo.png" alt="Liquid Lab Discord" style="width:58px;height:58px;border-radius:16px;border:4px solid #111114;object-fit:cover;background:#090909;">
+                    <div style="padding-top:24px;min-width:0;">
+                      <strong style="display:block;color:#fff;font-size:18px;line-height:1.2;">Liquid Lab</strong>
+                      <span style="display:block;margin-top:4px;color:#a7a7b3;font-size:12px;">Support • Orders • Updates</span>
+                    </div>
+                  </div>
+                  <div style="display:flex;gap:14px;flex-wrap:wrap;margin:16px 0;color:#c8c8d2;font-size:12px;">
+                    <span><i style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#23d160;margin-right:6px;"></i>Support available</span>
+                    <span><i style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#8b5cf6;margin-right:6px;"></i>Open a ticket after purchase</span>
+                  </div>
+                  <a href="https://discord.gg/liquidlab" target="_blank" rel="noreferrer" style="display:flex;align-items:center;justify-content:center;gap:10px;width:100%;box-sizing:border-box;padding:13px 16px;border-radius:9px;background:linear-gradient(135deg,#6f00ff,#9d00ff);color:#fff;text-decoration:none;font-weight:800;letter-spacing:.02em;box-shadow:0 0 18px rgba(145,0,255,.2);">
+                    JOIN LIQUID LAB DISCORD <span>→</span>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <section class="cta container">
+      <div>
+        <span class="mini-label">READY TO ORDER?</span>
+        <h2>Find the package that fits.</h2>
+      </div>
+      <a href="#services" class="primary-btn">Browse Services
+        <svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
+      </a>
+    </section>
+  </main>
+
+  <footer class="ll-footer">
+    <style>
+      .ll-footer{
+        position:relative;
+        margin-top:40px;
+        border-top:1px solid rgba(139,0,255,.95);
+        background:
+          radial-gradient(circle at 12% 12%, rgba(124,0,255,.10), transparent 28%),
+          radial-gradient(circle at 88% 100%, rgba(124,0,255,.08), transparent 30%),
+          linear-gradient(180deg,#0a0a0c 0%,#070708 100%);
+        color:#fff;
+        overflow:hidden;
+      }
+      .ll-footer:before{
+        content:"";
+        position:absolute;
+        inset:0;
+        pointer-events:none;
+        background:linear-gradient(90deg,transparent,rgba(128,0,255,.04),transparent);
+      }
+      .ll-footer-main{
+        position:relative;
+        z-index:1;
+        display:grid;
+        grid-template-columns:minmax(230px,1.15fr) minmax(150px,.85fr) minmax(150px,.85fr) minmax(270px,1.25fr);
+        gap:46px;
+        padding-top:54px;
+        padding-bottom:46px;
+        align-items:start;
+      }
+      .ll-footer-brand .brand{
+        display:inline-flex;
+        margin-bottom:18px;
+      }
+      .ll-footer-brand > p{
+        max-width:310px;
+        margin:0;
+        color:#a7a7b3;
+        line-height:1.75;
+        font-size:14px;
+      }
+      .ll-footer-kicker{
+        display:block;
+        margin-bottom:18px;
+        color:#a020ff;
+        font-size:12px;
+        font-weight:800;
+        letter-spacing:.14em;
+      }
+      .ll-footer-links{
+        display:grid;
+        gap:13px;
+      }
+      .ll-footer-links a{
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        gap:14px;
+        color:#d0d0d7;
+        text-decoration:none;
+        font-size:14px;
+        transition:.2s ease;
+      }
+      .ll-footer-links a span{
+        color:#8c00ff;
+        font-size:20px;
+        line-height:1;
+      }
+      .ll-footer-links a:hover{
+        color:#fff;
+        transform:translateX(3px);
+      }
+      .ll-footer-socials{
+        display:flex;
+        gap:10px;
+        margin-top:22px;
+        flex-wrap:wrap;
+      }
+      .ll-footer-socials a{
+        display:inline-flex;
+        align-items:center;
+        justify-content:center;
+        width:42px;
+        min-width:42px;
+        height:42px;
+        padding:0;
+        border:1px solid #43205b;
+        border-radius:10px;
+        background:#111115;
+        color:#fff;
+        text-decoration:none;
+        font-size:12px;
+        font-weight:800;
+        letter-spacing:.04em;
+        transition:.2s ease;
+      }
+      .ll-footer-socials a:hover{
+        border-color:#8c00ff;
+        box-shadow:0 0 18px rgba(140,0,255,.18);
+        transform:translateY(-2px);
+      }
+      .ll-secure-card{
+        border:1px solid #4a1d66;
+        border-radius:15px;
+        padding:22px;
+        background:linear-gradient(145deg,rgba(18,18,23,.98),rgba(10,10,13,.98));
+        box-shadow:0 16px 36px rgba(0,0,0,.22), inset 0 0 30px rgba(126,0,255,.025);
+      }
+      .ll-secure-head{
+        display:flex;
+        align-items:center;
+        gap:14px;
+      }
+      .ll-shield{
+        width:46px;
+        height:46px;
+        display:grid;
+        place-items:center;
+        border-radius:13px;
+        border:1px solid #6e20a3;
+        background:rgba(115,0,255,.12);
+        color:#a020ff;
+        font-size:23px;
+        box-shadow:0 0 20px rgba(137,0,255,.18);
+        flex:0 0 auto;
+      }
+      .ll-secure-card strong{
+        display:block;
+        font-size:14px;
+        letter-spacing:.12em;
+      }
+      .ll-secure-card p{
+        margin:6px 0 0;
+        color:#aaaab4;
+        line-height:1.55;
+        font-size:13px;
+      }
+      .ll-payment-row{
+        display:flex;
+        gap:8px;
+        flex-wrap:wrap;
+        margin-top:18px;
+      }
+      .ll-payment-pill{
+        display:inline-flex;
+        align-items:center;
+        padding:8px 10px;
+        border-radius:8px;
+        border:1px solid #2d2d34;
+        background:#0c0c0f;
+        color:#d8d8df;
+        font-size:11px;
+        font-weight:800;
+      }
+      .ll-footer-bottom{
+        position:relative;
+        z-index:1;
+        border-top:1px solid rgba(133,0,255,.75);
+      }
+      .ll-footer-bottom-inner{
+        min-height:76px;
+        display:grid;
+        grid-template-columns:1fr auto 1fr;
+        gap:20px;
+        align-items:center;
+        color:#9999a5;
+        font-size:12px;
+      }
+      .ll-footer-bottom-inner > :last-child{
+        text-align:right;
+      }
+      .ll-footer-mini-logo{
+        width:38px;
+        height:38px;
+        border-radius:10px;
+        object-fit:cover;
+        box-shadow:0 0 18px rgba(137,0,255,.22);
+      }
+      .ll-accent{
+        color:#9d00ff;
+      }
+      @media (max-width:980px){
+        .ll-footer-main{
+          grid-template-columns:1fr 1fr;
+        }
+      }
+      @media (max-width:640px){
+        .ll-footer-main{
+          grid-template-columns:1fr;
+          gap:34px;
+          padding-top:42px;
+        }
+        .ll-footer-bottom-inner{
+          grid-template-columns:1fr;
+          text-align:center;
+          padding:22px 0;
+        }
+        .ll-footer-bottom-inner > :last-child{
+          text-align:center;
+        }
+        .ll-footer-mini-logo{
+          margin:auto;
+        }
+      }
+    </style>
+
+    <div class="container ll-footer-main">
+      <div class="ll-footer-brand">
+        <a class="brand" href="https://discord.gg/liquidlab" target="_blank" rel="noreferrer">
+          <img src="logo.png" alt="LiquidLab Logo" class="brand-mark-img">
+          <span>LiquidLab<span class="brand-dot">.</span></span>
+        </a>
+        <p>Premium Call of Duty services with fast fulfillment, secure checkout, and support when you need it.</p>
+
+        <div class="ll-footer-socials">
+          <a href="https://discord.gg/liquidlab" target="_blank" rel="noreferrer" aria-label="Liquid Lab Discord" title="Discord">
+            <svg viewBox="0 0 24 24" aria-hidden="true" style="width:21px;height:21px;fill:currentColor;">
+              <path d="M19.54 5.34A16.3 16.3 0 0 0 15.44 4c-.18.32-.39.76-.53 1.1a15.1 15.1 0 0 0-5.82 0A11.8 11.8 0 0 0 8.55 4a16.5 16.5 0 0 0-4.1 1.35C1.85 9.2 1.15 12.95 1.5 16.65a16.7 16.7 0 0 0 5.03 2.54c.4-.55.77-1.13 1.08-1.74-.6-.23-1.18-.51-1.73-.84l.42-.33c3.34 1.55 7 1.55 10.3 0l.43.33c-.56.33-1.14.61-1.74.84.31.61.67 1.19 1.08 1.74a16.6 16.6 0 0 0 5.03-2.54c.42-4.29-.72-8-1.86-11.31ZM8.18 14.39c-1 0-1.82-.92-1.82-2.05 0-1.13.8-2.05 1.82-2.05s1.84.93 1.82 2.05c0 1.13-.8 2.05-1.82 2.05Zm7.64 0c-1 0-1.82-.92-1.82-2.05 0-1.13.8-2.05 1.82-2.05s1.84.93 1.82 2.05c0 1.13-.8 2.05-1.82 2.05Z"/>
+            </svg>
+          </a>
+          <a href="https://www.tiktok.com/@xecsty" target="_blank" rel="noreferrer" aria-label="Liquid Lab TikTok @xecsty" title="TikTok @xecsty">
+            <svg viewBox="0 0 24 24" aria-hidden="true" style="width:20px;height:20px;fill:currentColor;">
+              <path d="M14.5 3c.36 2.05 1.58 3.28 3.5 3.83v2.72a8.2 8.2 0 0 1-3.47-1.05v5.65A5.85 5.85 0 1 1 9.48 8.36v2.8a3.12 3.12 0 1 0 2.28 3V3h2.74Z"/>
+            </svg>
+          </a>
+          <a href="https://www.youtube.com/@jdotmtb" target="_blank" rel="noreferrer" aria-label="Liquid Lab YouTube @jdotmtb" title="YouTube @jdotmtb">
+            <svg viewBox="0 0 24 24" aria-hidden="true" style="width:22px;height:22px;fill:currentColor;">
+              <path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8ZM9.6 15.6V8.4L15.8 12l-6.2 3.6Z"/>
+            </svg>
+          </a>
+        </div>
+      </div>
+
+      <div>
+        <span class="ll-footer-kicker">STORE</span>
+        <div class="ll-footer-links">
+          <a href="#services" data-footer-filter="all">All Services <span>›</span></a>
+          <a href="#services" data-footer-filter="accounts">Accounts <span>›</span></a>
+          <a href="#services" data-footer-filter="bo3">BO3 <span>›</span></a>
+          <a href="#services" data-footer-filter="bo4">BO4 <span>›</span></a>
+          <a href="#services" data-footer-filter="cw">Cold War <span>›</span></a>
+          <a href="#services" data-footer-filter="bots">Bot Lobbies <span>›</span></a>
+          <a href="#services" data-footer-filter="psn">PSN Services <span>›</span></a>
+          <a href="#reviews">Reviews <span>›</span></a>
+          <a href="#faq">FAQ <span>›</span></a>
+        </div>
+      </div>
+
+      <div>
+        <span class="ll-footer-kicker">SUPPORT</span>
+        <div class="ll-footer-links">
+          <a href="https://discord.gg/liquidlab" target="_blank" rel="noreferrer">Discord <span>›</span></a>
+          <a href="#terms" data-policy-open="terms">Terms <span>›</span></a>
+          <a href="#refund-policy" data-policy-open="refund">Refund Policy <span>›</span></a>
+        </div>
+      </div>
+
+      <div class="ll-secure-card">
+        <div class="ll-secure-head">
+          <div class="ll-shield">✓</div>
+          <div>
+            <strong>SAFE &amp; SECURE</strong>
+            <p>Checkout is processed securely through Stripe. Your payment details are handled by the payment provider.</p>
+          </div>
+        </div>
+        <div class="ll-payment-row">
+          <span class="ll-payment-pill">STRIPE CHECKOUT</span>
+          <span class="ll-payment-pill">SECURE PAYMENT</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="ll-footer-bottom">
+      <div class="container ll-footer-bottom-inner">
+        <span>© 2026 <span class="ll-accent">Liquid Lab</span>. All rights reserved.</span>
+        <img src="logo.png" alt="Liquid Lab" class="ll-footer-mini-logo">
+        <span>Independent Call of Duty services.</span>
+      </div>
+    </div>
+  </footer>
+
+
+  <div class="policy-modal" id="termsPolicyModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="termsPolicyTitle">
+    <div class="policy-shell">
+      <div class="policy-head">
+        <div>
+          <div class="eyebrow"><span></span> LIQUID LAB POLICY</div>
+          <h2 id="termsPolicyTitle">Terms of Service</h2>
+        </div>
+        <button class="policy-close" type="button" data-policy-close aria-label="Close Terms of Service">×</button>
+      </div>
+      <div class="policy-body">
+        <div class="policy-note">By purchasing from Liquid Lab, you agree to the terms below. Please review the service description and requirements before checkout.</div>
+
+        <section>
+          <h3>1. Digital Services</h3>
+          <p>Liquid Lab provides digital Call of Duty-related services, including progression, unlocks, account services, lobby services, and other game-related offerings shown on this website. Service availability may vary by game, platform, account status, or current technical conditions.</p>
+        </section>
+
+        <section>
+          <h3>2. Orders & Payment</h3>
+          <p>Customers are responsible for selecting the correct product, platform, game, package, and account details before purchasing. Payment must be completed through the checkout method provided on the website.</p>
+        </section>
+
+        <section>
+          <h3>3. Delivery & Completion</h3>
+          <p>Delivery time depends on the service purchased. Some services may be completed quickly, while others require manual completion by the Liquid Lab team. After purchase, customers may be required to open a Discord ticket and provide the information needed to complete the order.</p>
+        </section>
+
+        <section>
+          <h3>4. Customer Responsibilities</h3>
+          <ul>
+            <li>Provide accurate account, platform, and order information.</li>
+            <li>Follow any instructions provided for the purchased service.</li>
+            <li>Do not interfere with an active service in a way that prevents completion.</li>
+            <li>Keep access to your own accounts and recovery methods secure.</li>
+          </ul>
+        </section>
+
+        <section>
+          <h3>5. Account & Game Risk</h3>
+          <p>Game services can involve third-party platforms and game systems that Liquid Lab does not control. Liquid Lab cannot guarantee that a publisher, platform holder, or game update will never affect an account, unlock, service, or feature after completion.</p>
+        </section>
+
+        <section>
+          <h3>6. Service Availability</h3>
+          <p>Liquid Lab may pause, modify, or discontinue a service when technical conditions, game updates, platform changes, or other circumstances make completion unavailable or unreliable. If an already-paid order cannot be completed, the customer should contact support so the order can be reviewed.</p>
+        </section>
+
+        <section>
+          <h3>7. Support</h3>
+          <p>Order questions and service support are handled through the Liquid Lab Discord. Customers should keep their order information available when opening a support ticket.</p>
+        </section>
+
+        <section>
+          <h3>8. Third-Party Affiliation</h3>
+          <p>Liquid Lab is an independent digital-services provider and is not affiliated with Activision, Call of Duty, Sony, Microsoft, or other game/platform trademark owners.</p>
+        </section>
+      </div>
+      <div class="policy-actions">
+        <button class="policy-back" type="button" data-policy-close>Back to Site</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="policy-modal" id="refundPolicyModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="refundPolicyTitle">
+    <div class="policy-shell">
+      <div class="policy-head">
+        <div>
+          <div class="eyebrow"><span></span> LIQUID LAB POLICY</div>
+          <h2 id="refundPolicyTitle">Refund Policy</h2>
+        </div>
+        <button class="policy-close" type="button" data-policy-close aria-label="Close Refund Policy">×</button>
+      </div>
+      <div class="policy-body">
+        <div class="policy-note">Because Liquid Lab sells digital services, refund eligibility depends on the status of the order and whether the purchased service has already been delivered or started.</div>
+
+        <section>
+          <h3>1. Before Service Begins</h3>
+          <p>If you contact Liquid Lab before work has started, a cancellation or refund request may be reviewed. Approval depends on the order status and whether any part of the service has already been prepared or delivered.</p>
+        </section>
+
+        <section>
+          <h3>2. Completed Services</h3>
+          <p>Once a digital service has been successfully completed or delivered as described, the order is generally considered fulfilled and is not eligible for a refund simply because the customer changes their mind.</p>
+        </section>
+
+        <section>
+          <h3>3. Unable to Complete an Order</h3>
+          <p>If Liquid Lab is unable to complete a paid service because the service becomes unavailable or cannot be provided as purchased, the order will be reviewed for an appropriate resolution, which may include a replacement service, store credit, or refund depending on the circumstances.</p>
+        </section>
+
+        <section>
+          <h3>4. Customer Error</h3>
+          <p>Refunds may be denied when an order cannot be completed because the customer selected the wrong product or platform, supplied incorrect information, lost access to the account, failed to follow required instructions, or otherwise prevented completion.</p>
+        </section>
+
+        <section>
+          <h3>5. Duplicate Payments</h3>
+          <p>Accidental duplicate payments should be reported through Discord support with proof of the duplicate transaction so the payment can be reviewed.</p>
+        </section>
+
+        <section>
+          <h3>6. Re-Apply / Soft Unlock Services</h3>
+          <p>Services described as re-apply, temporary, or soft unlocks are subject to the limitations stated on the product listing. If a customer later changes or removes the delivered result, a new purchase may be required.</p>
+        </section>
+
+        <section>
+          <h3>7. Chargebacks & Payment Disputes</h3>
+          <p>Please contact Liquid Lab support first if there is a problem with an order. Payment disputes or chargebacks filed after a service has been delivered may result in the order and related account history being reviewed and future service being refused.</p>
+        </section>
+
+        <section>
+          <h3>8. Requesting a Review</h3>
+          <p>To request a refund review, open a ticket in the Liquid Lab Discord and provide your order information, the service purchased, and a clear explanation of the issue.</p>
+        </section>
+      </div>
+      <div class="policy-actions">
+        <button class="policy-back" type="button" data-policy-close>Back to Site</button>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="lightbox" id="reviewLightbox" aria-hidden="true">
+    <button class="lightbox-close" id="lightboxClose" aria-label="Close image">×</button>
+    <img id="lightboxImg" src="" alt="">
+  </div>
+
+  <div class="search-modal" id="searchModal" aria-hidden="true">
+    <div class="search-box">
+      <div class="search-head">
+        <strong>Search services</strong>
+        <button id="closeSearch">×</button>
+      </div>
+      <input id="searchInput" type="text" placeholder="Try “account”, “stats”, “lobby”..." />
+      <div id="searchResults"></div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+  <script>
+    (() => {
+      const selectors = [
+        ['bo7LobbyOption', 'bo7LobbyPrice'],
+        ['bo7RankedOption', 'bo7RankedPrice'],
+        ['bo6LobbyOption', 'bo6LobbyPrice']
+      ];
+
+      selectors.forEach(([selectorId, priceId]) => {
+        const selector = document.getElementById(selectorId);
+        const price = document.getElementById(priceId);
+        if (selector && price) {
+          selector.addEventListener('change', () => {
+            price.textContent = '$' + Number(selector.value).toFixed(2);
+          });
+        }
+      });
+    })();
+  
+    const bo2LobbyOption = document.getElementById('bo2LobbyOption');
+    const bo2LobbyPrice = document.getElementById('bo2LobbyPrice');
+    if (bo2LobbyOption && bo2LobbyPrice) {
+      bo2LobbyOption.addEventListener('change', () => {
+        bo2LobbyPrice.textContent = `$${Number(bo2LobbyOption.value).toFixed(2)}`;
+      });
+    }
+</script>
+
+
+  <script>
+    (() => {
+      const option = document.getElementById('ps3TrophyOption');
+      const price = document.getElementById('ps3TrophyPrice');
+      if (!option || !price) return;
+      const updatePs3TrophyPrice = () => {
+        price.textContent = option.value === 'ticket' ? 'TICKET' : `$${Number(option.value).toFixed(2)}`;
+      };
+      option.addEventListener('change', updatePs3TrophyPrice);
+      updatePs3TrophyPrice();
+    })();
+  </script>
+
+  <script>
+    (() => {
+      const option = document.getElementById('cwServiceOption');
+      const price = document.getElementById('cwServicePrice');
+      const details = document.getElementById('cwServiceDetails');
+      if (!option || !price || !details) return;
+
+      const serviceDetails = {
+        '30': 'Dark Aether Zombies Camo • All CW DLC Guns Unlock • All Zombies Cards (Incl. Dark Ops) • Lots Of Challenges Unlocked • Zombie Related Emblems • Max Aetherium Crystals • All Trophies Unlocked',
+        '15': 'Unlock All Mastery Zombie Camos Only!',
+        '10:2': 'All trophies unlocked!',
+        '10:3': '1000 Raw / Refined / Flawless Crystals'
+      };
+
+      const updateCwService = () => {
+        const selectedIndex = option.selectedIndex;
+        const selectedValue = option.value;
+        price.textContent = `$${Number(selectedValue).toFixed(2)}`;
+        let key = selectedValue;
+        if (selectedValue === '10') key = selectedIndex === 2 ? '10:2' : '10:3';
+        details.textContent = serviceDetails[key] || '';
+      };
+
+      option.addEventListener('change', updateCwService);
+      updateCwService();
+    })();
+  </script>
+
+  <script>
+    (() => {
+      const packageSelect = document.getElementById('bo3PackageOption');
+      const packageDetails = document.getElementById('bo3PackageDetails');
+      if (packageSelect && packageDetails) {
+        const updatePackageDetails = () => {
+          const selected = packageSelect.options[packageSelect.selectedIndex];
+          packageDetails.innerHTML = '<strong>Includes</strong><br>' + (selected.dataset.details || '');
+        };
+        packageSelect.addEventListener('change', updatePackageDetails);
+        updatePackageDetails();
+      }
+
+      const groupedServices = [
+        ['premiumAccountOption','premiumAccountPrice','premiumAccountBuy'],
+        ['bo3DivOption','bo3DivPrice','bo3DivBuy'],
+        ['bo3CryptoOption','bo3CryptoPrice','bo3CryptoBuy'],
+        ['bo3PackageOption','bo3PackagePrice','bo3PackageBuy'],
+        ['bo3SingleOption','bo3SinglePrice','bo3SingleBuy'],
+        ['bo3SpendOption','bo3SpendPrice','bo3SpendBuy'],
+        ['bo4MpOption','bo4MpPrice','bo4MpBuy'],
+        ['bo4CrateOption','bo4CratePrice','bo4CrateBuy'],
+        ['bo4ClanOption','bo4ClanPrice','bo4ClanBuy'],
+        ['bo4EventOption','bo4EventPrice','bo4EventBuy']
+      ];
+      groupedServices.forEach(([selectId, priceId, buyId]) => {
+        const select = document.getElementById(selectId);
+        const price = document.getElementById(priceId);
+        const buy = document.getElementById(buyId);
+        if (!select || !price || !buy) return;
+        const update = () => {
+          const selected = select.options[select.selectedIndex];
+          price.textContent = `$${Number(selected.value).toFixed(2)}`;
+          if (buy.closest('.product-card')?.dataset.paused === 'true') {
+            buy.removeAttribute('href');
+            buy.textContent = 'Temporarily Unavailable';
+            buy.setAttribute('aria-disabled', 'true');
+            buy.setAttribute('tabindex', '-1');
+            buy.style.pointerEvents = 'none';
+            buy.style.opacity = '.58';
+            buy.style.cursor = 'not-allowed';
+          } else if (selectId === 'premiumAccountOption' && selected.dataset.paused === 'true') {
+            buy.href = '#';
+            buy.textContent = 'Temporarily Unavailable';
+            buy.setAttribute('aria-disabled', 'true');
+            buy.style.pointerEvents = 'none';
+            buy.style.opacity = '.58';
+            buy.style.cursor = 'not-allowed';
+          } else {
+            buy.href = selected.dataset.link || '#';
+            buy.innerHTML = 'Buy Product <span>→</span>';
+            buy.removeAttribute('aria-disabled');
+            buy.style.pointerEvents = '';
+            buy.style.opacity = '';
+            buy.style.cursor = '';
+          }
+        };
+        select.addEventListener('change', update);
+        update();
+      });
+    })();
+  </script>
+
+
+  <script>
+    (() => {
+      const supportFaq = document.querySelector('details.support-always-open');
+      if (!supportFaq) return;
+      supportFaq.open = true;
+      const summary = supportFaq.querySelector('summary');
+      if (summary) {
+        summary.style.cursor = 'default';
+        summary.addEventListener('click', (event) => {
+          event.preventDefault();
+          supportFaq.open = true;
+        });
+      }
+      supportFaq.addEventListener('toggle', () => {
+        if (!supportFaq.open) supportFaq.open = true;
+      });
+    })();
+  </script>
+
+
+  <script>
+    document.querySelectorAll('#faq details').forEach((detail) => {
+      detail.open = true;
+      const summary = detail.querySelector('summary');
+      if (summary) {
+        summary.addEventListener('click', (event) => {
+          event.preventDefault();
+          detail.open = true;
+        });
+      }
+    });
+  </script>
+
+  <script>
+    // Footer store links: activate the matching service category before scrolling there.
+    document.querySelectorAll('[data-footer-filter]').forEach(link => {
+      link.addEventListener('click', event => {
+        event.preventDefault();
+
+        const category = link.dataset.footerFilter;
+        const matchingFilter = document.querySelector(`.filter[data-filter="${category}"]`);
+
+        if (matchingFilter) {
+          matchingFilter.click();
+        }
+
+        document.getElementById('services')?.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start'
+        });
+      });
+    });
+  </script>
+
+
+
+  <script>
+    (() => {
+      const checkoutSelectors = [
+        ['cwServiceOption','cwServiceBuy'],
+        ['ps3TrophyOption','ps3TrophyBuy'],
+        ['bo7LobbyOption','bo7LobbyBuy'],
+        ['bo7RankedOption','bo7RankedBuy'],
+        ['bo6LobbyOption','bo6LobbyBuy']
+      ];
+
+      checkoutSelectors.forEach(([selectId, buyId]) => {
+        const select = document.getElementById(selectId);
+        const buy = document.getElementById(buyId);
+        if (!select || !buy) return;
+
+        const updateCheckoutLink = () => {
+          const selected = select.options[select.selectedIndex];
+          if (selected.value === 'ticket') {
+            buy.href = 'https://discord.gg/liquidlab';
+            buy.target = '_blank';
+            buy.rel = 'noreferrer';
+            buy.innerHTML = 'Open Ticket <span>→</span>';
+            return;
+          }
+
+          buy.href = selected.dataset.link || '#';
+          buy.removeAttribute('target');
+          buy.removeAttribute('rel');
+          buy.innerHTML = 'Buy Product <span>→</span>';
+        };
+
+        select.addEventListener('change', updateCheckoutLink);
+        updateCheckoutLink();
+      });
+    })();
+  </script>
+
+
+  <script>
+    (() => {
+      const termsModal = document.getElementById('termsPolicyModal');
+      const refundModal = document.getElementById('refundPolicyModal');
+      const modals = [termsModal, refundModal].filter(Boolean);
+
+      function openPolicy(type){
+        const modal = type === 'terms' ? termsModal : refundModal;
+        if(!modal) return;
+        modal.classList.add('open');
+        modal.setAttribute('aria-hidden','false');
+        document.body.classList.add('policy-open');
+        const closeBtn = modal.querySelector('.policy-close');
+        if(closeBtn) closeBtn.focus();
+      }
+
+      function closePolicies(){
+        modals.forEach(modal => {
+          modal.classList.remove('open');
+          modal.setAttribute('aria-hidden','true');
+        });
+        document.body.classList.remove('policy-open');
+      }
+
+      document.querySelectorAll('[data-policy-open]').forEach(link => {
+        link.addEventListener('click', e => {
+          e.preventDefault();
+          openPolicy(link.dataset.policyOpen);
+        });
+      });
+
+      document.querySelectorAll('[data-policy-close]').forEach(btn => {
+        btn.addEventListener('click', closePolicies);
+      });
+
+      modals.forEach(modal => {
+        modal.addEventListener('click', e => {
+          if(e.target === modal) closePolicies();
+        });
+      });
+
+      document.addEventListener('keydown', e => {
+        if(e.key === 'Escape') closePolicies();
+      });
+    })();
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="site-config.js"></script>
+  <script src="product-status.js"></script>
+  <script src="announcement.js"></script>
+</body>
+</html>
