@@ -464,8 +464,7 @@
           </div>
         </article>
 
-        <article class="product-card" data-category="bots">
-          <div class="badge hot" style="background:#2a2a30;color:#d7d7df;border-color:#44444d;">TEMPORARILY UNAVAILABLE</div>
+        <article class="product-card" data-category="bots" data-paused="true">
           <div class="product-image">
             <img src="products\bo2bot.png" alt="BO2 Multiplayer Bot Lobbies — PS4/PS5" loading="lazy" onerror="this.closest('.product-image').classList.add('img-error')">
             <div class="product-icon">BO2</div>
@@ -639,7 +638,7 @@
           </div>
         </article>
 
-        <article class="product-card" data-category="bo4" data-subcategory="mp">
+        <article class="product-card" data-category="bo4" data-subcategory="mp" data-paused="true">
           <div class="product-image">
             <img src="products\allin1.png" alt="BO4 Multiplayer Unlocks & Levels" loading="lazy" onerror="this.closest('.product-image').classList.add('img-error')">
             <div class="product-icon">MP</div>
@@ -665,7 +664,7 @@
           </div>
         </article>
 
-        <article class="product-card" data-category="bo4" data-subcategory="crate">
+        <article class="product-card" data-category="bo4" data-subcategory="crate" data-paused="true">
           <div class="product-image">
             <img src="products\5kcrates.png" alt="BO4 Reserve Crates" loading="lazy" onerror="this.closest('.product-image').classList.add('img-error')">
             <div class="product-icon">CASE</div>
@@ -690,7 +689,7 @@
           </div>
         </article>
 
-        <article class="product-card" data-category="bo4" data-subcategory="clan">
+        <article class="product-card" data-category="bo4" data-subcategory="clan" data-paused="true">
           <div class="product-image">
             <img src="products\clantagb04.png" alt="BO4 Colored Clan Tag" loading="lazy" onerror="this.closest('.product-image').classList.add('img-error')">
             <div class="product-icon">CLAN</div>
@@ -715,7 +714,7 @@
           </div>
         </article>
 
-        <article class="product-card" data-category="bo4" data-subcategory="rare">
+        <article class="product-card" data-category="bo4" data-subcategory="rare" data-paused="true">
           <div class="product-image">
             <img src="products\bo4event.png" alt="BO4 MP / Zombies Events" loading="lazy" onerror="this.closest('.product-image').classList.add('img-error')">
             <div class="product-icon">PKG</div>
@@ -1464,7 +1463,15 @@
         const update = () => {
           const selected = select.options[select.selectedIndex];
           price.textContent = `$${Number(selected.value).toFixed(2)}`;
-          if (selectId === 'premiumAccountOption' && selected.dataset.paused === 'true') {
+          if (buy.closest('.product-card')?.dataset.paused === 'true') {
+            buy.removeAttribute('href');
+            buy.textContent = 'Temporarily Unavailable';
+            buy.setAttribute('aria-disabled', 'true');
+            buy.setAttribute('tabindex', '-1');
+            buy.style.pointerEvents = 'none';
+            buy.style.opacity = '.58';
+            buy.style.cursor = 'not-allowed';
+          } else if (selectId === 'premiumAccountOption' && selected.dataset.paused === 'true') {
             buy.href = '#';
             buy.textContent = 'Temporarily Unavailable';
             buy.setAttribute('aria-disabled', 'true');

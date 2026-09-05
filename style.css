@@ -132,6 +132,15 @@ svg{width:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round
 .product-card:after{content:"";position:absolute;width:180px;height:180px;right:-80px;top:-80px;background:rgba(255,255,255,.025);border-radius:50%}
 .product-card:hover{border-color:#3c3c42;transform:translateY(-3px);box-shadow:0 20px 50px rgba(0,0,0,.2)}
 .product-card.featured{border-color:#7a00ff;box-shadow:inset 0 0 50px rgba(212,22,42,.035)}
+.product-card[data-paused="true"]{border-color:#4a3d57;background:linear-gradient(145deg,#111014,#0b0b0d);box-shadow:inset 0 0 45px rgba(122,0,255,.055)}
+.product-card[data-paused="true"]:hover{border-color:#5b496b;transform:none;box-shadow:inset 0 0 45px rgba(122,0,255,.07)}
+.product-card[data-paused="true"]:before{content:"PAUSED • UNAVAILABLE UNTIL FURTHER NOTICE";position:absolute;z-index:4;top:76px;left:36px;right:36px;padding:10px 12px;border:1px solid rgba(188,136,255,.55);border-radius:7px;background:rgba(20,13,27,.94);box-shadow:0 8px 24px rgba(0,0,0,.48);color:#d6b2ff;font-size:9px;font-weight:900;letter-spacing:1px;text-align:center}
+.product-card[data-paused="true"] .product-image img{filter:grayscale(.72) brightness(.45)}
+.product-card[data-paused="true"] .stock{color:#aaaab4;font-size:0}
+.product-card[data-paused="true"] .stock i{background:#777782}
+.product-card[data-paused="true"] .stock:after{content:"PAUSED";font-size:8px}
+.product-card[data-paused="true"] select{opacity:.5;cursor:not-allowed}
+.product-card[data-paused="true"] .buy-btn{pointer-events:none;opacity:.58;cursor:not-allowed;background:#17151b;border-color:#3d3546;color:#aaa4b0}
 .badge{position:absolute;top:0;right:20px;padding:6px 9px;border-radius:0 0 5px 5px;font-size:8px;font-weight:900;letter-spacing:.8px}
 .popular{background:var(--red);color:#fff}.hot{background:#2a2a2d;color:#ddd}
 .product-image{position:relative;margin-bottom:23px}

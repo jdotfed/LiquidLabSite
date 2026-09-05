@@ -2,6 +2,20 @@ const filterButtons = document.querySelectorAll('.filter');
 const products = [...document.querySelectorAll('.product-card')];
 const subfiltersBar = document.getElementById('subfilters');
 
+// Paused services stay visible, but every checkout path is disabled.
+document.querySelectorAll('.product-card[data-paused="true"]').forEach(card => {
+  card.querySelectorAll('select').forEach(select => {
+    select.disabled = true;
+    select.setAttribute('aria-disabled', 'true');
+  });
+  card.querySelectorAll('.buy-btn').forEach(button => {
+    button.removeAttribute('href');
+    button.setAttribute('aria-disabled', 'true');
+    button.setAttribute('tabindex', '-1');
+    button.textContent = 'Temporarily Unavailable';
+  });
+});
+
 // Add an entry here for any main filter (data-filter value) that should
 // show a row of subcategory chips. "key" must match the data-subcategory
 // attribute on the matching .product-card elements.
