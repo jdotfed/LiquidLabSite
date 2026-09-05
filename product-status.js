@@ -56,20 +56,69 @@
     });
   }
 
-  async function loadProductStatuses() {
-    const { data, error } = await db
-      .from('product_controls')
-      .select('product_id,status');
+  function setOptionStatuses(card, optionRows) {
+    const select = card.querySelector('select');
+    if (!select) return;
 
-    if (error || !data) {
+    optionRows.forEach(row => {
+      const option = select.options[row.option_index];
+      if (!option) return;
+      if (!option.dataset.originalLabel) option.dataset.originalLabel = option.textContent.replace(/ — Unavailable$/, '');
+      const paused = row.status === 'paused';
+      option.disabled = paused;
+      option.textContent = `${option.dataset.originalLabel}${paused ? ' — Unavailable' : ''}`;
+    });
+
+    if (select.options[select.selectedIndex]?.disabled) {
+      const firstAvailable = [...select.options].find(option => !option.disabled);
+      if (firstAvailable) {
+        select.value = firstAvailable.value;
+        firstAvailable.selected = true;
+        select.dispatchEvent(new Event('change', { bubbles: true }));
+      }
+    }
+
+    const allPaused = [...select.options].every(option => option.disabled);
+    if (allPaused && card.dataset.paused !== 'true') {
+      const button = card.querySelector('.buy-btn');
+      const stock = card.querySelector('.stock');
+      select.disabled = true;
+      if (stock) {
+        stock.innerHTML = '<i></i> TEMPORARILY UNAVAILABLE';
+        stock.style.color = '#aaaab4';
+      }
+      if (button) {
+        button.removeAttribute('href');
+        button.setAttribute('aria-disabled', 'true');
+        button.style.pointerEvents = 'none';
+        button.style.opacity = '.58';
+        button.textContent = 'Temporarily Unavailable';
+      }
+    }
+  }
+
+  async function loadProductStatuses() {
+    const [{ data: products, error: productError }, { data: options, error: optionError }] = await Promise.all([
+      db.from('product_controls').select('product_id,status'),
+      db.from('product_option_controls').select('product_id,option_index,status')
+    ]);
+
+    if (productError || !products) {
       console.warn('Live product availability could not be loaded. Using built-in website statuses.');
       return;
     }
 
-    data.forEach(product => {
+    products.forEach(product => {
       const card = document.querySelector(`[data-product-id="${product.product_id}"]`);
       if (card) setCardStatus(card, product.status);
     });
+
+    if (!optionError && options) {
+      products.forEach(product => {
+        const card = document.querySelector(`[data-product-id="${product.product_id}"]`);
+        if (card) setOptionStatuses(card, options.filter(option => option.product_id === product.product_id));
+      });
+    }
   }
 
   loadProductStatuses();

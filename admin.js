@@ -29,6 +29,7 @@
 
   const owners = config.ownerEmails.map(email => email.toLowerCase());
   const db = window.supabase.createClient(config.supabaseUrl, config.supabasePublishableKey);
+  let expandedProductId = '';
 
   function isOwner(email) { return owners.includes((email || '').toLowerCase()); }
   function showMessage(element, text, error = false) {
@@ -55,9 +56,28 @@
     await loadDashboard();
   }
 
-  function productRow(product) {
+  function statusButtons(currentStatus, onChange) {
+    const actions = document.createElement('div');
+    actions.className = 'status-actions';
+    ['available', 'paused'].forEach(nextStatus => {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = `status-button ${nextStatus} ${currentStatus === nextStatus ? 'active' : ''}`;
+      button.textContent = nextStatus === 'available' ? 'Available' : 'Pause';
+      button.addEventListener('click', onChange(nextStatus));
+      actions.appendChild(button);
+    });
+    return actions;
+  }
+
+  function productRow(product, options) {
     const row = document.createElement('article');
-    row.className = `admin-product ${product.status}`;
+    row.className = `admin-product product-accordion ${product.status}`;
+    row.dataset.productId = product.product_id;
+    const summary = document.createElement('button');
+    summary.type = 'button';
+    summary.className = 'product-summary';
+    summary.setAttribute('aria-expanded', String(expandedProductId === product.product_id));
     const info = document.createElement('div');
     const title = document.createElement('h3');
     title.textContent = product.product_name;
@@ -65,26 +85,68 @@
     status.className = 'status-label';
     status.textContent = product.status === 'paused' ? 'Paused on public store' : 'Available on public store';
     info.append(title, status);
+    const chevron = document.createElement('span');
+    chevron.className = 'accordion-chevron';
+    chevron.textContent = '⌄';
+    summary.append(info, chevron);
 
-    const actions = document.createElement('div');
-    actions.className = 'status-actions';
-    ['available', 'paused'].forEach(nextStatus => {
-      const button = document.createElement('button');
-      button.type = 'button';
-      button.className = `status-button ${nextStatus} ${product.status === nextStatus ? 'active' : ''}`;
-      button.textContent = nextStatus === 'available' ? 'Available' : 'Pause';
-      button.addEventListener('click', () => updateStatus(product.product_id, nextStatus, row));
-      actions.appendChild(button);
+    const body = document.createElement('div');
+    body.className = 'product-accordion-body';
+    body.hidden = expandedProductId !== product.product_id;
+
+    const wholeProduct = document.createElement('div');
+    wholeProduct.className = 'control-row main-control-row';
+    const wholeLabel = document.createElement('div');
+    wholeLabel.innerHTML = '<strong>Entire product</strong><small>Pause every option and block checkout</small>';
+    wholeProduct.append(wholeLabel, statusButtons(product.status, nextStatus => event => {
+      event.stopPropagation();
+      updateStatus(product.product_id, nextStatus, row);
+    }));
+    body.appendChild(wholeProduct);
+
+    if (options.length) {
+      const optionHeading = document.createElement('p');
+      optionHeading.className = 'option-heading';
+      optionHeading.textContent = 'DROPDOWN OPTIONS';
+      body.appendChild(optionHeading);
+      options.forEach(option => {
+        const optionRow = document.createElement('div');
+        optionRow.className = `control-row option-control-row ${option.status}`;
+        const optionInfo = document.createElement('div');
+        const optionName = document.createElement('strong');
+        optionName.textContent = option.option_name;
+        const optionState = document.createElement('small');
+        optionState.textContent = option.status === 'paused' ? 'Unavailable on store' : 'Available on store';
+        optionInfo.append(optionName, optionState);
+        optionRow.append(optionInfo, statusButtons(option.status, nextStatus => () => updateOptionStatus(option.id, nextStatus, row)));
+        body.appendChild(optionRow);
+      });
+    } else {
+      const noOptions = document.createElement('p');
+      noOptions.className = 'no-options';
+      noOptions.textContent = 'This product has no dropdown options.';
+      body.appendChild(noOptions);
+    }
+
+    summary.addEventListener('click', () => {
+      const opening = body.hidden;
+      document.querySelectorAll('.product-accordion-body').forEach(panel => { panel.hidden = true; });
+      document.querySelectorAll('.product-summary').forEach(button => button.setAttribute('aria-expanded', 'false'));
+      body.hidden = !opening;
+      summary.setAttribute('aria-expanded', String(opening));
+      expandedProductId = opening ? product.product_id : '';
     });
-    row.append(info, actions);
+
+    row.append(summary, body);
     return row;
   }
 
   async function loadDashboard() {
     showMessage(dashboardMessage, '');
     productGrid.innerHTML = '<p class="empty">Loading products…</p>';
-    const [{ data: products, error: productError }, { data: history, error: historyError }] = await Promise.all([
+    const [{ data: products, error: productError }, { data: options, error: optionError }, { data: history, error: historyError }] = await Promise.all([
       db.from('product_controls').select('product_id,product_name,status,sort_order').order('sort_order'),
+      db.from('product_option_controls').select('id,product_id,option_index,option_name,status').order('option_index'),
       db.from('product_change_log').select('product_name,old_status,new_status,changed_by,changed_at').order('changed_at', { ascending: false }).limit(25)
     ]);
 
@@ -97,7 +159,7 @@
     }
 
     productGrid.innerHTML = '';
-    products.forEach(product => productGrid.appendChild(productRow(product)));
+    products.forEach(product => productGrid.appendChild(productRow(product, optionError ? [] : options.filter(option => option.product_id === product.product_id))));
     if (!products.length) productGrid.innerHTML = '<p class="empty">No products found. Run the included Supabase setup file.</p>';
 
     historyList.innerHTML = '';
@@ -170,6 +232,18 @@
       return;
     }
     showMessage(dashboardMessage, 'Saved. The public store will use the new status on refresh.');
+    await loadDashboard();
+  }
+
+  async function updateOptionStatus(optionId, status, row) {
+    row.querySelectorAll('button').forEach(button => button.disabled = true);
+    const { error } = await db.from('product_option_controls').update({ status }).eq('id', optionId);
+    if (error) {
+      showMessage(dashboardMessage, `Could not save option: ${error.message}`, true);
+      row.querySelectorAll('button').forEach(button => button.disabled = false);
+      return;
+    }
+    showMessage(dashboardMessage, 'Option saved. Refresh the public store to see the change.');
     await loadDashboard();
   }
 
