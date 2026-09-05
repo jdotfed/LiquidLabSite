@@ -39,6 +39,24 @@
         <button id="refreshButton" class="ghost-button" type="button">Refresh</button>
       </div>
       <p class="dashboard-note">Changes save immediately and update the public store on its next page load.</p>
+
+      <section class="announcement-panel">
+        <div class="section-heading"><h2>Site Announcement</h2><span>Top-of-page banner</span></div>
+        <form id="announcementForm" class="announcement-form">
+          <label class="toggle-row"><input id="announcementEnabled" type="checkbox"><span>Show announcement on the website</span></label>
+          <div class="announcement-fields">
+            <label>Title<input id="announcementTitleInput" type="text" maxlength="80" placeholder="Service Update"></label>
+            <label>Style<select id="announcementStyle"><option value="info">Info</option><option value="important">Important</option><option value="sale">Sale</option><option value="maintenance">Maintenance</option></select></label>
+            <label class="wide-field">Message<textarea id="announcementMessageInput" maxlength="280" rows="3" placeholder="Enter the announcement customers should see."></textarea></label>
+            <label>Button text <small>(optional)</small><input id="announcementButtonText" type="text" maxlength="30" placeholder="View Services"></label>
+            <label>Button link <small>(optional)</small><input id="announcementButtonUrl" type="text" maxlength="500" placeholder="#services or https://..."></label>
+          </div>
+          <div id="announcementPreview" class="announcement-preview" data-style="info"><strong>Service Update</strong><span>Your announcement preview appears here.</span></div>
+          <button id="saveAnnouncementButton" class="primary-button save-announcement" type="submit">Publish Announcement</button>
+          <p id="announcementMessageStatus" class="message" role="status"></p>
+        </form>
+      </section>
+
       <div id="productGrid" class="admin-products" aria-live="polite"></div>
 
       <section class="history-panel">

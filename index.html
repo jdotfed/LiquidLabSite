@@ -170,6 +170,22 @@
     </nav>
   </header>
 
+  <aside id="siteAnnouncement" class="site-announcement" data-style="info" hidden aria-live="polite">
+    <div class="announcement-inner container">
+      <div class="announcement-copy">
+        <span id="announcementIcon" class="announcement-icon" aria-hidden="true">📢</span>
+        <div>
+          <strong id="announcementTitle"></strong>
+          <span id="announcementMessage"></span>
+        </div>
+      </div>
+      <div class="announcement-actions">
+        <a id="announcementButton" class="announcement-link" href="#" hidden></a>
+        <button id="announcementDismiss" class="announcement-dismiss" type="button" aria-label="Dismiss announcement">×</button>
+      </div>
+    </div>
+  </aside>
+
   <main id="home">
     <section class="hero container">
       <div class="hero-copy">
@@ -1638,5 +1654,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="site-config.js"></script>
   <script src="product-status.js"></script>
+  <script src="announcement.js"></script>
 </body>
 </html>

@@ -10,6 +10,16 @@
   const ownerIdentity = document.getElementById('ownerIdentity');
   const signOutButton = document.getElementById('signOutButton');
   const refreshButton = document.getElementById('refreshButton');
+  const announcementForm = document.getElementById('announcementForm');
+  const announcementEnabled = document.getElementById('announcementEnabled');
+  const announcementTitleInput = document.getElementById('announcementTitleInput');
+  const announcementMessageInput = document.getElementById('announcementMessageInput');
+  const announcementStyle = document.getElementById('announcementStyle');
+  const announcementButtonText = document.getElementById('announcementButtonText');
+  const announcementButtonUrl = document.getElementById('announcementButtonUrl');
+  const announcementPreview = document.getElementById('announcementPreview');
+  const announcementMessageStatus = document.getElementById('announcementMessageStatus');
+  const saveAnnouncementButton = document.getElementById('saveAnnouncementButton');
 
   if (!config || !window.supabase) {
     loginMessage.textContent = 'Admin configuration could not be loaded.';
@@ -78,6 +88,8 @@
       db.from('product_change_log').select('product_name,old_status,new_status,changed_by,changed_at').order('changed_at', { ascending: false }).limit(25)
     ]);
 
+    await loadAnnouncement();
+
     if (productError) {
       productGrid.innerHTML = '';
       showMessage(dashboardMessage, `Could not load products: ${productError.message}`, true);
@@ -103,6 +115,50 @@
       row.append(detail, meta);
       historyList.appendChild(row);
     });
+  }
+
+  function updateAnnouncementPreview() {
+    announcementPreview.dataset.style = announcementStyle.value;
+    announcementPreview.querySelector('strong').textContent = announcementTitleInput.value.trim() || 'Service Update';
+    announcementPreview.querySelector('span').textContent = announcementMessageInput.value.trim() || 'Your announcement preview appears here.';
+  }
+
+  async function loadAnnouncement() {
+    const { data, error } = await db.from('site_announcement').select('*').eq('id', 1).maybeSingle();
+    if (error) {
+      showMessage(announcementMessageStatus, `Could not load announcement: ${error.message}`, true);
+      return;
+    }
+    if (!data) return;
+    announcementEnabled.checked = data.enabled;
+    announcementTitleInput.value = data.title || '';
+    announcementMessageInput.value = data.message || '';
+    announcementStyle.value = data.style || 'info';
+    announcementButtonText.value = data.button_text || '';
+    announcementButtonUrl.value = data.button_url || '';
+    updateAnnouncementPreview();
+  }
+
+  async function saveAnnouncement(event) {
+    event.preventDefault();
+    const title = announcementTitleInput.value.trim();
+    const message = announcementMessageInput.value.trim();
+    if (announcementEnabled.checked && (!title || !message)) {
+      showMessage(announcementMessageStatus, 'Add both a title and message before turning the announcement on.', true);
+      return;
+    }
+    saveAnnouncementButton.disabled = true;
+    showMessage(announcementMessageStatus, 'Publishing…');
+    const { error } = await db.from('site_announcement').update({
+      enabled: announcementEnabled.checked,
+      title,
+      message,
+      style: announcementStyle.value,
+      button_text: announcementButtonText.value.trim(),
+      button_url: announcementButtonUrl.value.trim()
+    }).eq('id', 1);
+    saveAnnouncementButton.disabled = false;
+    showMessage(announcementMessageStatus, error ? `Could not publish: ${error.message}` : 'Published. Refresh the public website to see it.', Boolean(error));
   }
 
   async function updateStatus(productId, status, row) {
@@ -132,6 +188,8 @@
 
   signOutButton.addEventListener('click', async () => { await db.auth.signOut(); });
   refreshButton.addEventListener('click', loadDashboard);
+  announcementForm.addEventListener('submit', saveAnnouncement);
+  [announcementTitleInput, announcementMessageInput, announcementStyle].forEach(input => input.addEventListener('input', updateAnnouncementPreview));
   db.auth.onAuthStateChange((_event, session) => { setTimeout(() => renderDashboard(session), 0); });
   db.auth.getSession().then(({ data }) => renderDashboard(data.session));
 })();

@@ -212,6 +212,13 @@ footer{border-top:1px solid var(--line);background:#09090a;padding-top:45px}
 .search-result{padding:12px 4px;border-bottom:1px solid var(--line);font-size:11px;color:#aaa}
 .search-result strong{color:#fff}
 .hidden{display:none!important}
+.site-announcement{position:relative;z-index:15;border-bottom:1px solid rgba(193,138,255,.3);background:linear-gradient(90deg,rgba(78,15,143,.96),rgba(25,10,43,.98));color:#fff}
+.site-announcement[hidden]{display:none}
+.announcement-inner{min-height:58px;display:flex;align-items:center;justify-content:space-between;gap:18px;padding-block:10px}
+.announcement-copy,.announcement-actions{display:flex;align-items:center;gap:12px}.announcement-copy>div{display:flex;align-items:baseline;gap:9px;flex-wrap:wrap}.announcement-icon{font-size:18px}.announcement-copy strong{font:700 13px "Space Grotesk"}.announcement-copy span:not(.announcement-icon){font-size:12px;color:#e2d9e9}
+.announcement-link{padding:8px 11px;border:1px solid rgba(255,255,255,.28);border-radius:6px;background:rgba(255,255,255,.08);color:#fff;font-size:10px;font-weight:800;white-space:nowrap}.announcement-link:hover{background:#fff;color:#12081c}
+.announcement-dismiss{width:30px;height:30px;border:0;background:transparent;color:#ddd;font-size:22px;line-height:1}.announcement-dismiss:hover{color:#fff}
+.site-announcement[data-style="important"]{background:linear-gradient(90deg,#7b1320,#351016);border-color:#d64d5e}.site-announcement[data-style="sale"]{background:linear-gradient(90deg,#5e1596,#24103c);border-color:#d191ff}.site-announcement[data-style="maintenance"]{background:linear-gradient(90deg,#634211,#2b1d08);border-color:#d69a3d}
 @media (max-width:900px){
   .nav-links{display:none}
   .hero{grid-template-columns:1fr;padding-top:75px}
@@ -238,4 +245,5 @@ footer{border-top:1px solid var(--line);background:#09090a;padding-top:45px}
   .rating-box{align-self:flex-start}
   .cta{align-items:flex-start;flex-direction:column;gap:18px}
   .footer-grid{grid-template-columns:1fr}.footer-bottom{flex-direction:column;gap:8px}
+  .announcement-inner{align-items:flex-start}.announcement-copy>div{display:grid;gap:3px}.announcement-actions{margin-left:auto}.announcement-link{display:none}.announcement-copy span:not(.announcement-icon){line-height:1.4}
 }
