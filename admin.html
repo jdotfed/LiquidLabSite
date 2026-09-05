@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="theme-color" content="#090909">
+  <title>Liquid Lab — Owner Panel</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+  <main class="admin-shell">
+    <header class="admin-header">
+      <a class="brand" href="index.html"><img src="logo.png" alt="Liquid Lab"><span>LIQUID LAB</span></a>
+      <div class="header-actions">
+        <span id="ownerIdentity" class="owner-identity"></span>
+        <button id="signOutButton" class="ghost-button" type="button" hidden>Sign Out</button>
+      </div>
+    </header>
+
+    <section id="loginView" class="login-card">
+      <p class="eyebrow">OWNER ACCESS</p>
+      <h1>Store Control Panel</h1>
+      <p>Enter an approved owner email. We’ll send a secure sign-in link.</p>
+      <form id="loginForm">
+        <label for="email">Owner email</label>
+        <input id="email" name="email" type="email" autocomplete="email" placeholder="owner@email.com" required>
+        <button class="primary-button" type="submit">Send Secure Login Link</button>
+      </form>
+      <p id="loginMessage" class="message" role="status"></p>
+    </section>
+
+    <section id="dashboardView" hidden>
+      <div class="dashboard-title">
+        <div><p class="eyebrow">LIVE STORE CONTROLS</p><h1>Product Availability</h1></div>
+        <button id="refreshButton" class="ghost-button" type="button">Refresh</button>
+      </div>
+      <p class="dashboard-note">Changes save immediately and update the public store on its next page load.</p>
+      <div id="productGrid" class="admin-products" aria-live="polite"></div>
+
+      <section class="history-panel">
+        <div class="section-heading"><h2>Recent Changes</h2><span>Owner activity</span></div>
+        <div id="historyList" class="history-list"></div>
+      </section>
+      <p id="dashboardMessage" class="message" role="status"></p>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="site-config.js"></script>
+  <script src="admin.js"></script>
+</body>
+</html>
