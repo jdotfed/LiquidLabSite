@@ -211,23 +211,25 @@
     }
     saveAnnouncementButton.disabled = true;
     showMessage(announcementMessageStatus, 'Publishing…');
-    const { error } = await db.from('site_announcement').update({
+    const { data: savedAnnouncement, error } = await db.from('site_announcement').update({
       enabled: announcementEnabled.checked,
       title,
       message,
       style: announcementStyle.value,
       button_text: announcementButtonText.value.trim(),
       button_url: announcementButtonUrl.value.trim()
-    }).eq('id', 1);
+    }).eq('id', 1).select('id').maybeSingle();
     saveAnnouncementButton.disabled = false;
-    showMessage(announcementMessageStatus, error ? `Could not publish: ${error.message}` : 'Published. Refresh the public website to see it.', Boolean(error));
+    const saveError = error || (!savedAnnouncement ? new Error('Supabase did not update the announcement. Run ADMIN-PERMISSIONS-REPAIR.sql.') : null);
+    showMessage(announcementMessageStatus, saveError ? `Could not publish: ${saveError.message}` : 'Published. Refresh the public website to see it.', Boolean(saveError));
   }
 
   async function updateStatus(productId, status, row) {
     row.querySelectorAll('button').forEach(button => button.disabled = true);
-    const { error } = await db.from('product_controls').update({ status }).eq('product_id', productId);
-    if (error) {
-      showMessage(dashboardMessage, `Could not save: ${error.message}`, true);
+    const { data: savedProduct, error } = await db.from('product_controls').update({ status }).eq('product_id', productId).select('product_id').maybeSingle();
+    const saveError = error || (!savedProduct ? new Error('Supabase did not update this product. Run ADMIN-PERMISSIONS-REPAIR.sql.') : null);
+    if (saveError) {
+      showMessage(dashboardMessage, `Could not save: ${saveError.message}`, true);
       row.querySelectorAll('button').forEach(button => button.disabled = false);
       return;
     }
@@ -237,9 +239,10 @@
 
   async function updateOptionStatus(optionId, status, row) {
     row.querySelectorAll('button').forEach(button => button.disabled = true);
-    const { error } = await db.from('product_option_controls').update({ status }).eq('id', optionId);
-    if (error) {
-      showMessage(dashboardMessage, `Could not save option: ${error.message}`, true);
+    const { data: savedOption, error } = await db.from('product_option_controls').update({ status }).eq('id', optionId).select('id').maybeSingle();
+    const saveError = error || (!savedOption ? new Error('Supabase did not update this option. Run ADMIN-PERMISSIONS-REPAIR.sql.') : null);
+    if (saveError) {
+      showMessage(dashboardMessage, `Could not save option: ${saveError.message}`, true);
       row.querySelectorAll('button').forEach(button => button.disabled = false);
       return;
     }
