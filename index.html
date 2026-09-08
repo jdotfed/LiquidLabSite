@@ -314,31 +314,31 @@
         </article>
 
         <article class="product-card" data-category="psn" data-product-id="ps3-trophy-service">
-          <div class="badge hot">PS3 ONLY</div>
+          <div class="badge hot">PS3 GAMES</div>
           <div class="product-image">
-            <img src="products\p3trophy.png" alt="PS3 Trophy Service" loading="lazy" onerror="this.closest('.product-image').classList.add('img-error')">
+            <img src="products\p3trophy.png" alt="PlayStation Trophy Service for PS3 Games" loading="lazy" onerror="this.closest('.product-image').classList.add('img-error')">
             <div class="product-icon">PS3</div>
           </div>
           <div class="product-meta"><span>PSN SERVICE</span><span class="stock"><i></i> AVAILABLE</span></div>
-          <h3>PS3 Trophy Service</h3>
-          <p>Purchase a PlayStation 3 Trophy Service. This service is for PS3 games only. Tell us which game you want.</p>
+          <h3>PlayStation Trophy Service</h3>
+          <p>Unlock trophies for supported PS3 games on your PSN account. Earned trophies sync to your PlayStation profile and remain visible across PS3, PS4, PS5, and the PlayStation App.</p>
           <ul>
-            <li>Custom timestamps cost extra — discuss via ticket</li>
+            <li>Choose a package based on the number of trophies you want</li>
+            <li>Every package uses random timestamps</li>
             <li><strong>Login required</strong> — we log in to complete this service. You can still use the account while we work.</li>
             <li>Login via PSN app is the preferred method</li>
           </ul>
           <div class="bot-lobby-selector" style="margin: 14px 0 18px;">
             <label for="ps3TrophyOption" style="display:block;margin-bottom:7px;font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;">SELECT PACKAGE</label>
             <select id="ps3TrophyOption" style="width:100%;padding:12px 14px;border-radius:8px;border:1px solid #3a3a42;background:#151518;color:#fff;font:inherit;">
-              <option value="2" data-link="https://buy.stripe.com/5kQ8wH77FfD89xngGT5AQ12">1 Game — $2</option>
-              <option value="8" data-link="https://buy.stripe.com/bJe8wHbnVdv06lb0HV5AQ13">5 Game Pack — $8</option>
-              <option value="15" data-link="https://buy.stripe.com/5kQfZ963B4YucJz3U75AQ14">10 Game Pack — $15</option>
-              <option value="ticket">Higher Amounts — Discuss via ticket</option>
+              <option value="15" data-link="https://buy.stripe.com/aFadR1bnVaiObFvgGT5AQ1g">25 Trophies — Random Timestamps — $15</option>
+              <option value="30" data-link="https://buy.stripe.com/8x23cnajRaiOcJz3U75AQ1h">50 Trophies — Random Timestamps — $30</option>
+              <option value="65" data-link="https://buy.stripe.com/5kQ00b3VtbmS8tj76j5AQ1i">100 Trophies — Random Timestamps — $65</option>
             </select>
           </div>
           <div class="product-bottom">
-            <div class="price"><small>FROM</small><strong id="ps3TrophyPrice">$2.00</strong></div>
-            <a href="https://buy.stripe.com/5kQ8wH77FfD89xngGT5AQ12" class="buy-btn sellix-link" id="ps3TrophyBuy">Buy Product <span>→</span></a>
+            <div class="price"><small>FROM</small><strong id="ps3TrophyPrice">$15.00</strong></div>
+            <a href="https://buy.stripe.com/aFadR1bnVaiObFvgGT5AQ1g" class="buy-btn sellix-link" id="ps3TrophyBuy">Buy Product <span>→</span></a>
           </div>
         </article>
 
@@ -1687,8 +1687,8 @@
 
         const updateCheckoutLink = () => {
           const selected = select.options[select.selectedIndex];
-          if (selected.value === 'ticket') {
-            buy.href = 'https://discord.gg/liquidlab';
+          if (selected.value === 'ticket' || selected.dataset.ticket === 'true') {
+            buy.href = selected.dataset.link || 'https://discord.gg/liquidlab';
             buy.target = '_blank';
             buy.rel = 'noreferrer';
             buy.innerHTML = 'Open Ticket <span>→</span>';
