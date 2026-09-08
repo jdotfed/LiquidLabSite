@@ -4,6 +4,74 @@
 
   const db = window.supabase.createClient(config.supabaseUrl, config.supabasePublishableKey);
 
+  function saleIsValid(record) {
+    return Boolean(record?.sale_enabled && Number(record.sale_price) > 0 && /^https:\/\//i.test(record.sale_link || ''));
+  }
+
+  function money(value) {
+    return `$${Number(value).toFixed(2)}`;
+  }
+
+  function applySaleDisplay(card, sale, selectedOption) {
+    const price = card.querySelector('.price strong');
+    const button = card.querySelector('.buy-btn');
+    if (!price || !button) return;
+
+    if (!price.dataset.regularText) price.dataset.regularText = price.textContent.trim();
+    if (!button.dataset.regularHref && button.getAttribute('href')) button.dataset.regularHref = button.getAttribute('href');
+
+    card.classList.remove('sale-active');
+    card.querySelector('.live-sale-badge')?.remove();
+
+    const regularPrice = selectedOption ? money(selectedOption.value) : price.dataset.regularText;
+    const regularLink = selectedOption?.dataset.link || button.dataset.originalHref || button.dataset.regularHref;
+    price.textContent = regularPrice;
+
+    const unavailable = card.dataset.paused === 'true' || selectedOption?.disabled;
+    if (!unavailable && regularLink) {
+      button.href = regularLink;
+      button.removeAttribute('aria-disabled');
+      button.removeAttribute('tabindex');
+      button.style.pointerEvents = '';
+      button.style.opacity = '';
+      button.style.cursor = '';
+      button.innerHTML = 'Buy Product <span>→</span>';
+    }
+
+    if (!saleIsValid(sale) || unavailable) return;
+
+    const badge = document.createElement('span');
+    badge.className = 'live-sale-badge';
+    badge.textContent = sale.sale_label || 'SALE';
+    card.appendChild(badge);
+    card.classList.add('sale-active');
+    price.innerHTML = `<span class="regular-price">${regularPrice}</span><span class="discount-price">${money(sale.sale_price)}</span>`;
+    button.href = sale.sale_link;
+    button.innerHTML = 'Shop Sale <span>→</span>';
+  }
+
+  function setupCardSales(card, product, optionRows) {
+    const select = card.querySelector('select');
+    const apply = () => {
+      let selectedSale = null;
+      let selectedOption = null;
+      if (select) {
+        selectedOption = select.options[select.selectedIndex];
+        optionRows.forEach(row => {
+          const option = select.options[row.option_index];
+          if (!option) return;
+          const base = option.dataset.originalLabel || option.textContent.replace(/ — (?:Temporarily )?Unavailable$/, '');
+          option.dataset.originalLabel = base;
+          option.textContent = `${base}${row.status === 'paused' ? ' — Unavailable' : saleIsValid(row) ? ` — ${row.sale_label || 'SALE'} ${money(row.sale_price)}` : ''}`;
+        });
+        selectedSale = optionRows.find(row => row.option_index === select.selectedIndex);
+      }
+      applySaleDisplay(card, saleIsValid(selectedSale) ? selectedSale : product, selectedOption);
+    };
+    if (select) select.addEventListener('change', apply);
+    apply();
+  }
+
   function setCardStatus(card, status) {
     const paused = status === 'paused';
     card.dataset.paused = paused ? 'true' : 'false';
@@ -109,8 +177,8 @@
 
   async function loadProductStatuses() {
     const [{ data: products, error: productError }, { data: options, error: optionError }] = await Promise.all([
-      db.from('product_controls').select('product_id,status'),
-      db.from('product_option_controls').select('product_id,option_index,status')
+      db.from('product_controls').select('product_id,status,sale_enabled,sale_price,sale_label,sale_link'),
+      db.from('product_option_controls').select('product_id,option_index,status,sale_enabled,sale_price,sale_label,sale_link')
     ]);
 
     if (productError || !products) {
@@ -129,6 +197,11 @@
         if (card) setOptionStatuses(card, options.filter(option => option.product_id === product.product_id));
       });
     }
+
+    products.forEach(product => {
+      const card = document.querySelector(`[data-product-id="${product.product_id}"]`);
+      if (card) setupCardSales(card, product, optionError || !options ? [] : options.filter(option => option.product_id === product.product_id));
+    });
   }
 
   loadProductStatuses();

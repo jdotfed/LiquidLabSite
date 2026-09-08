@@ -37,6 +37,10 @@
     element.classList.toggle('error', error);
   }
 
+  function escapeAttribute(value) {
+    return String(value ?? '').replace(/[&<>'"]/g, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[character]));
+  }
+
   async function renderDashboard(session) {
     const email = session?.user?.email || '';
     if (!session || !isOwner(email)) {
@@ -68,6 +72,44 @@
       actions.appendChild(button);
     });
     return actions;
+  }
+
+  function saleEditor(record, table, idColumn, idValue, row) {
+    const panel = document.createElement('details');
+    panel.className = `sale-editor ${record.sale_enabled ? 'sale-live' : ''}`;
+
+    const summary = document.createElement('summary');
+    summary.innerHTML = `<span><strong>${record.sale_enabled ? '🔥 SALE LIVE' : 'Add a sale'}</strong><small>${record.sale_enabled ? `${escapeAttribute(record.sale_label || 'SALE')} • $${Number(record.sale_price).toFixed(2)}` : 'Special price + Stripe checkout link'}</small></span><b>+</b>`;
+
+    const form = document.createElement('form');
+    form.className = 'sale-form';
+    form.innerHTML = `
+      <label>Sale price<input class="sale-price-input" type="number" min="0.01" step="0.01" placeholder="19.99" value="${escapeAttribute(record.sale_price)}"></label>
+      <label>Sale badge<input class="sale-label-input" type="text" maxlength="30" placeholder="WEEKEND SALE" value="${escapeAttribute(record.sale_label)}"></label>
+      <label class="sale-link-field">Discounted Stripe link<input class="sale-link-input" type="url" maxlength="500" placeholder="https://buy.stripe.com/..." value="${escapeAttribute(record.sale_link)}"></label>
+      <div class="sale-form-actions">
+        <button class="primary-button start-sale-button" type="submit">${record.sale_enabled ? 'Update Sale' : 'Start Sale'}</button>
+        <button class="ghost-button end-sale-button" type="button" ${record.sale_enabled ? '' : 'disabled'}>End Sale</button>
+      </div>`;
+
+    form.addEventListener('submit', async event => {
+      event.preventDefault();
+      const price = Number(form.querySelector('.sale-price-input').value);
+      const label = form.querySelector('.sale-label-input').value.trim() || 'SALE';
+      const link = form.querySelector('.sale-link-input').value.trim();
+      if (!Number.isFinite(price) || price <= 0 || !/^https:\/\//i.test(link)) {
+        showMessage(dashboardMessage, 'Enter a valid sale price and full https:// Stripe link.', true);
+        return;
+      }
+      await updateSale(table, idColumn, idValue, { sale_enabled: true, sale_price: price, sale_label: label, sale_link: link }, row);
+    });
+
+    form.querySelector('.end-sale-button').addEventListener('click', async () => {
+      await updateSale(table, idColumn, idValue, { sale_enabled: false }, row);
+    });
+
+    panel.append(summary, form);
+    return panel;
   }
 
   function productRow(product, options) {
@@ -103,6 +145,7 @@
       updateStatus(product.product_id, nextStatus, row);
     }));
     body.appendChild(wholeProduct);
+    body.appendChild(saleEditor(product, 'product_controls', 'product_id', product.product_id, row));
 
     if (options.length) {
       const optionHeading = document.createElement('p');
@@ -120,6 +163,7 @@
         optionInfo.append(optionName, optionState);
         optionRow.append(optionInfo, statusButtons(option.status, nextStatus => () => updateOptionStatus(option.id, nextStatus, row)));
         body.appendChild(optionRow);
+        body.appendChild(saleEditor(option, 'product_option_controls', 'id', option.id, row));
       });
     } else {
       const noOptions = document.createElement('p');
@@ -145,8 +189,8 @@
     showMessage(dashboardMessage, '');
     productGrid.innerHTML = '<p class="empty">Loading products…</p>';
     const [{ data: products, error: productError }, { data: options, error: optionError }, { data: history, error: historyError }] = await Promise.all([
-      db.from('product_controls').select('product_id,product_name,status,sort_order').order('sort_order'),
-      db.from('product_option_controls').select('id,product_id,option_index,option_name,status').order('option_index'),
+      db.from('product_controls').select('product_id,product_name,status,sort_order,sale_enabled,sale_price,sale_label,sale_link').order('sort_order'),
+      db.from('product_option_controls').select('id,product_id,option_index,option_name,status,sale_enabled,sale_price,sale_label,sale_link').order('option_index'),
       db.from('product_change_log').select('product_name,old_status,new_status,changed_by,changed_at').order('changed_at', { ascending: false }).limit(25)
     ]);
 
@@ -247,6 +291,19 @@
       return;
     }
     showMessage(dashboardMessage, 'Option saved. Refresh the public store to see the change.');
+    await loadDashboard();
+  }
+
+  async function updateSale(table, idColumn, idValue, payload, row) {
+    row.querySelectorAll('.sale-form button').forEach(button => button.disabled = true);
+    const { data, error } = await db.from(table).update(payload).eq(idColumn, idValue).select(idColumn).maybeSingle();
+    const saveError = error || (!data ? new Error('Supabase did not update this sale. Run SALES-SETUP.sql.') : null);
+    if (saveError) {
+      showMessage(dashboardMessage, `Could not save sale: ${saveError.message}`, true);
+      row.querySelectorAll('.sale-form button').forEach(button => button.disabled = false);
+      return;
+    }
+    showMessage(dashboardMessage, payload.sale_enabled === false ? 'Sale ended. The regular price and link are restored.' : 'Sale is live. Refresh the public store to see it.');
     await loadDashboard();
   }
 
