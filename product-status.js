@@ -63,9 +63,16 @@
     optionRows.forEach(row => {
       const option = select.options[row.option_index];
       if (!option) return;
-      if (!option.dataset.originalLabel) option.dataset.originalLabel = option.textContent.replace(/ — Unavailable$/, '');
+      if (!option.dataset.originalLabel) {
+        option.dataset.originalLabel = option.textContent.replace(/ — (?:Temporarily )?Unavailable$/, '');
+      }
       const paused = row.status === 'paused';
       option.disabled = paused;
+      if (paused) {
+        option.dataset.paused = 'true';
+      } else {
+        delete option.dataset.paused;
+      }
       option.textContent = `${option.dataset.originalLabel}${paused ? ' — Unavailable' : ''}`;
     });
 
@@ -95,6 +102,9 @@
         button.textContent = 'Temporarily Unavailable';
       }
     }
+
+    // Refresh the displayed price and checkout button after live statuses apply.
+    select.dispatchEvent(new Event('change', { bubbles: true }));
   }
 
   async function loadProductStatuses() {
