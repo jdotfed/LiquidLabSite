@@ -23,7 +23,8 @@
     card.classList.remove('sale-active');
     card.querySelector('.live-sale-badge')?.remove();
 
-    const regularPrice = selectedOption ? money(selectedOption.value) : price.dataset.regularText;
+    const ticketOption = selectedOption?.value === 'ticket' || selectedOption?.dataset.ticket === 'true';
+    const regularPrice = selectedOption ? (ticketOption ? 'TICKET' : money(selectedOption.value)) : price.dataset.regularText;
     const regularLink = selectedOption?.dataset.link || button.dataset.originalHref || button.dataset.regularHref;
     price.textContent = regularPrice;
 
@@ -35,10 +36,18 @@
       button.style.pointerEvents = '';
       button.style.opacity = '';
       button.style.cursor = '';
-      button.innerHTML = 'Buy Product <span>→</span>';
+      if (ticketOption) {
+        button.target = '_blank';
+        button.rel = 'noreferrer';
+        button.innerHTML = 'Open Ticket <span>→</span>';
+      } else {
+        button.removeAttribute('target');
+        button.removeAttribute('rel');
+        button.innerHTML = 'Buy Product <span>→</span>';
+      }
     }
 
-    if (!saleIsValid(sale) || unavailable) return;
+    if (!saleIsValid(sale) || unavailable || ticketOption) return;
 
     const badge = document.createElement('span');
     badge.className = 'live-sale-badge';
@@ -110,7 +119,9 @@
       }
 
       const select = card.querySelector('select');
-      const selectedLink = select?.options[select.selectedIndex]?.dataset.link;
+      const selectedOption = select?.options[select.selectedIndex];
+      const selectedLink = selectedOption?.dataset.link;
+      const ticketOption = selectedOption?.value === 'ticket' || selectedOption?.dataset.ticket === 'true';
       const restoredLink = selectedLink || button.dataset.originalHref;
       if (restoredLink) button.setAttribute('href', restoredLink);
       button.removeAttribute('aria-disabled');
@@ -120,7 +131,15 @@
       } else {
         button.removeAttribute('style');
       }
-      button.innerHTML = 'Buy Product <span>→</span>';
+      if (ticketOption) {
+        button.target = '_blank';
+        button.rel = 'noreferrer';
+        button.innerHTML = 'Open Ticket <span>→</span>';
+      } else {
+        button.removeAttribute('target');
+        button.removeAttribute('rel');
+        button.innerHTML = 'Buy Product <span>→</span>';
+      }
     });
   }
 
